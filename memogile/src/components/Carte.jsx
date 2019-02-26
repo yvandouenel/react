@@ -44,11 +44,19 @@ class Carte extends Component {
     return (
       <div>
         <div className="border border-warning m-1 p-1 mb-4">
-          <div className="float-right mt-4">
-            <FaAngleRight />
+          <div className="float-right mt-4 cursor-pointer">
+            <FaAngleRight
+              onClick={() =>
+                this.props.onMoveCarte(this, this.props.col_id, "right")
+              }
+            />
           </div>
-          <div className="float-left mt-4">
-            <FaAngleLeft />
+          <div className="float-left mt-4 cursor-pointer">
+            <FaAngleLeft
+              onClick={() =>
+                this.props.onMoveCarte(this, this.props.col_id, "left")
+              }
+            />
           </div>
           <div className="panel panel-default  p-2 ">
             <div
@@ -67,8 +75,8 @@ class Carte extends Component {
             </Button>
             <Button
               variant="warning"
-              onClick={() => this.props.onRemove(this)}
-              className="ml-4"
+              onClick={() => this.props.onRemove(this, this.props.col_id)}
+              className="ml-4 bg-danger text-white"
             >
               Supprimer
             </Button>
@@ -85,6 +93,7 @@ class Carte extends Component {
                   question:
                   <input
                     type="text"
+                    className="ml-4"
                     value={this.state.question}
                     onChange={this.handleChangeQuestion}
                   />
@@ -93,6 +102,7 @@ class Carte extends Component {
                   Réponse:
                   <input
                     type="text"
+                    className="ml-4"
                     value={this.state.reponse}
                     onChange={this.handleChangeReponse}
                   />
@@ -100,9 +110,6 @@ class Carte extends Component {
               </form>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={this.handleClose}>
-                Fermer
-              </Button>
               <Button variant="primary" onClick={this.handleClose}>
                 Enregistrer
               </Button>
