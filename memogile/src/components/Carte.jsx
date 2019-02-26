@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 
 class Carte extends Component {
   state = {
@@ -36,18 +37,22 @@ class Carte extends Component {
     else this.setState({ show_reponse: true });
   };
   manageClass = () => {
-    console.log("hello");
-
     let sr_only = this.state.show_reponse ? "" : " sr-only";
     return "panel-footer reponse border border-success m-2 p-2" + sr_only;
   };
   render() {
     return (
-      <div className="col-2">
+      <div>
         <div className="border border-warning m-1 p-1 mb-4">
-          <div className="panel panel-default  p-2 m-2">
+          <div className="float-right mt-4">
+            <FaAngleRight />
+          </div>
+          <div className="float-left mt-4">
+            <FaAngleLeft />
+          </div>
+          <div className="panel panel-default  p-2 ">
             <div
-              className="panel-body question border border-secondary m-2 p-2"
+              className="panel-body question m-2 p-2"
               onClick={this.showReponse}
             >
               {this.state.question}
@@ -59,6 +64,13 @@ class Carte extends Component {
           <div className="pl-4">
             <Button variant="primary" onClick={this.handleShow}>
               Modifier
+            </Button>
+            <Button
+              variant="warning"
+              onClick={() => this.props.onRemove(this)}
+              className="ml-4"
+            >
+              Supprimer
             </Button>
           </div>
 
