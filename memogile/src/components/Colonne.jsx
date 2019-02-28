@@ -19,11 +19,15 @@ class Colonne extends Component {
               <Carte
                 key={carte.id}
                 id={carte.id}
-                col_id={this.props.id}
+                carte={carte}
+                colonne={this.props.colonne}
                 question={carte.question}
                 reponse={carte.reponse}
                 onRemove={this.props.onRemoveCarte}
                 onMoveCarte={this.props.onMoveCarte}
+                onChangeQuestion={this.props.onChangeQuestion}
+                onChangeReponse={this.props.onChangeReponse}
+                onSubmitQR={this.props.onSubmitQR}
               />
             );
           })}

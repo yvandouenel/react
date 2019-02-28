@@ -68,7 +68,7 @@ class Tableau extends Component {
     const state = { ...this.state };
     const col = state.colonnes.find(c => c.id === col_react.props.id);
     state.colonnes[col.id - 1].cartes.push({
-      id: this.totalCartes(),
+      id: this.totalCartes() + 1,
       question: "Une question",
       reponse: "Sa réponse"
     });
@@ -94,12 +94,13 @@ class Tableau extends Component {
     //console.log(carte_react, col_react_id, direction);
     const state = { ...this.state };
     const col = state.colonnes.find(col => col.id === col_react_id);
+    // clonage de la carte
     const carte = {
       ...state.colonnes[col.id - 1].cartes.find(
         carte => carte.id === carte_react.props.id
       )
     };
-
+    console.log(carte);
     switch (direction) {
       case "right":
         if (col_react_id < this.state.colonnes.length) {
@@ -126,9 +127,41 @@ class Tableau extends Component {
     }
 
     this.setState(state);
-    console.log(carte);
+  };
+  /**
+   * Récupération de l'émetteur de l'événement + de la carte + de la colonne
+   * Il faut passer par col_index et carte_index pour changer le clone du state
+   */
+  handleChangeQuestion = (event, carte_event, col_event) => {
+    console.log("carte: " + carte_event + " - col : " + col_event);
+
+    let state = { ...this.state };
+    let col_index = state.colonnes.indexOf(col_event);
+    let carte_index = state.colonnes[col_index].cartes.indexOf(carte_event);
+    state.colonnes[col_index].cartes[carte_index].question = event.target.value;
+    this.setState(state);
+    event.preventDefault();
+  };
+  /**
+   * Récupération de l'émetteur de l'événement + de la carte + de la colonne
+   * Il faut passer par col_index et carte_index pour changer le clone du state
+   */
+  handleChangeReponse = (event, carte_event, col_event) => {
+    console.log("carte: " + carte_event + " - col : " + col_event);
+
+    let state = { ...this.state };
+    let col_index = state.colonnes.indexOf(col_event);
+    let carte_index = state.colonnes[col_index].cartes.indexOf(carte_event);
+    state.colonnes[col_index].cartes[carte_index].reponse = event.target.value;
+    this.setState(state);
   };
 
+  handleSubmit = event => {
+    console.log("test");
+    alert("Une question ou une réponse ont été modifiées: ");
+    event.preventDefault();
+    return false;
+  };
   render() {
     return (
       <div className="row p-4">
@@ -137,11 +170,15 @@ class Tableau extends Component {
             <Colonne
               key={col.id}
               id={col.id}
+              colonne={col}
               title={col.title}
               cartes={col.cartes}
               onMoveCarte={this.moveCarte}
               onRemoveCarte={this.removeCarte}
               onAddCarte={this.addCarte}
+              onChangeQuestion={this.handleChangeQuestion}
+              onChangeReponse={this.handleChangeReponse}
+              onSubmitQR={this.handleSubmit}
             />
           );
         })}

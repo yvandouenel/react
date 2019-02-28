@@ -5,30 +5,17 @@ import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 
 class Carte extends Component {
   state = {
-    question: this.props.question,
-    reponse: this.props.reponse,
     show_reponse: false
   };
-  handleChangeQuestion = event => {
-    this.setState({ question: event.target.value });
-    event.preventDefault();
-    return false;
-  };
-  handleChangeReponse = event => {
-    this.setState({ reponse: event.target.value });
-    event.preventDefault();
-    return false;
-  };
-  handleSubmit = event => {
-    alert("Une question a été modifiée: " + this.state.question);
-    event.preventDefault();
-    return false;
-  };
+
   handleClose = () => {
+    console.log("Dans HandleClose");
+
     this.setState({ show: false });
   };
 
   handleShow = event => {
+    console.log("Dans HandleShow");
     this.setState({ show: true });
   };
 
@@ -47,14 +34,14 @@ class Carte extends Component {
           <div className="float-right mt-4 cursor-pointer">
             <FaAngleRight
               onClick={() =>
-                this.props.onMoveCarte(this, this.props.col_id, "right")
+                this.props.onMoveCarte(this, this.props.colonne.id, "right")
               }
             />
           </div>
           <div className="float-left mt-4 cursor-pointer">
             <FaAngleLeft
               onClick={() =>
-                this.props.onMoveCarte(this, this.props.col_id, "left")
+                this.props.onMoveCarte(this, this.props.colonne.id, "left")
               }
             />
           </div>
@@ -63,9 +50,9 @@ class Carte extends Component {
               className="panel-body question m-2 p-2"
               onClick={this.showReponse}
             >
-              {this.state.question}
+              {this.props.question}
             </div>
-            <div className={this.manageClass()}>{this.state.reponse}</div>
+            <div className={this.manageClass()}>{this.props.reponse}</div>
           </div>
 
           {/* modal */}
@@ -75,7 +62,7 @@ class Carte extends Component {
             </Button>
             <Button
               variant="warning"
-              onClick={() => this.props.onRemove(this, this.props.col_id)}
+              onClick={() => this.props.onRemove(this, this.props.colonne.id)}
               className="ml-4 bg-danger text-white"
             >
               Supprimer
@@ -87,27 +74,41 @@ class Carte extends Component {
               <Modal.Title>Modifier une question ou une réponse</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              {/* formulaire ici */}
-              <form onSubmit={this.handleSubmit}>
-                <label>
-                  question:
-                  <input
-                    type="text"
-                    className="ml-4"
-                    value={this.state.question}
-                    onChange={this.handleChangeQuestion}
-                  />
-                </label>
-                <label>
-                  Réponse:
-                  <input
-                    type="text"
-                    className="ml-4"
-                    value={this.state.reponse}
-                    onChange={this.handleChangeReponse}
-                  />
-                </label>
-              </form>
+              {
+                /* formulaire ici */
+                <form onSubmit={this.props.onSubmitQR}>
+                  <label>
+                    question:
+                    <input
+                      type="text"
+                      className="ml-4"
+                      value={this.props.question}
+                      onChange={e =>
+                        this.props.onChangeQuestion(
+                          e,
+                          this.props.carte,
+                          this.props.colonne
+                        )
+                      }
+                    />
+                  </label>
+                  <label>
+                    Réponse:
+                    <input
+                      type="text"
+                      className="ml-4"
+                      value={this.props.reponse}
+                      onChange={e =>
+                        this.props.onChangeReponse(
+                          e,
+                          this.props.carte,
+                          this.props.colonne
+                        )
+                      }
+                    />
+                  </label>
+                </form>
+              }
             </Modal.Body>
             <Modal.Footer>
               <Button variant="primary" onClick={this.handleClose}>
