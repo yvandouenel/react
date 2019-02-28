@@ -3,6 +3,7 @@ import Colonne from "./Colonne";
 
 class Tableau extends Component {
   state = {
+    sujet: this.props.sujet,
     colonnes: [
       {
         id: 1,
@@ -164,24 +165,29 @@ class Tableau extends Component {
   };
   render() {
     return (
-      <div className="row p-4">
-        {this.state.colonnes.map(col => {
-          return (
-            <Colonne
-              key={col.id}
-              id={col.id}
-              colonne={col}
-              title={col.title}
-              cartes={col.cartes}
-              onMoveCarte={this.moveCarte}
-              onRemoveCarte={this.removeCarte}
-              onAddCarte={this.addCarte}
-              onChangeQuestion={this.handleChangeQuestion}
-              onChangeReponse={this.handleChangeReponse}
-              onSubmitQR={this.handleSubmit}
-            />
-          );
-        })}
+      <div>
+        <div className="row p-4 justify-content-center">
+          <h1 className="text-light">{this.state.sujet}</h1>
+        </div>
+        <div className="row p-4">
+          {this.state.colonnes.map(col => {
+            return (
+              <Colonne
+                key={col.id}
+                id={col.id}
+                colonne={col}
+                title={col.title}
+                cartes={col.cartes}
+                onMoveCarte={this.moveCarte}
+                onRemoveCarte={this.removeCarte}
+                onAddCarte={this.addCarte}
+                onChangeQuestion={this.handleChangeQuestion}
+                onChangeReponse={this.handleChangeReponse}
+                onSubmitQR={this.handleSubmit}
+              />
+            );
+          })}
+        </div>
       </div>
     );
   }
