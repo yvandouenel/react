@@ -4,10 +4,7 @@ import Modal from "react-bootstrap/Modal";
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 
 class Carte extends Component {
-  state = {
-    show_reponse: false
-  };
-
+  state = {};
   handleClose = () => {
     console.log("Dans HandleClose");
 
@@ -19,14 +16,6 @@ class Carte extends Component {
     this.setState({ show: true });
   };
 
-  showReponse = event => {
-    if (this.state.show_reponse) this.setState({ show_reponse: false });
-    else this.setState({ show_reponse: true });
-  };
-  manageClass = () => {
-    let sr_only = this.state.show_reponse ? "" : " sr-only";
-    return "panel-footer reponse border border-success m-2 p-2" + sr_only;
-  };
   render() {
     return (
       <div>
@@ -58,11 +47,23 @@ class Carte extends Component {
           <div className="panel panel-default  p-2 ">
             <div
               className="panel-body question m-2 p-2"
-              onClick={this.showReponse}
+              onClick={e => {
+                this.props.onShowReponse(
+                  e,
+                  this.props.carte,
+                  this.props.colonne,
+                  this.props.tableau
+                );
+              }}
             >
               {this.props.question}
             </div>
-            <div className={this.manageClass()}>{this.props.reponse}</div>
+
+            {this.props.show_reponse && (
+              <div className="panel-footer reponse border border-success m-2 p-2">
+                {this.props.reponse}
+              </div>
+            )}
           </div>
 
           {/* modal */}

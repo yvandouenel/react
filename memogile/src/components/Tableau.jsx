@@ -7,6 +7,14 @@ class Tableau extends Component {
       <div>
         <div className="row p-4 justify-content-center">
           <h1 className="text-light">{this.props.sujet}</h1>
+          <button
+            className="btn"
+            onClick={e => {
+              this.props.onShowAllReponse(e, this.props.tableau);
+            }}
+          >
+            Voir toutes les réponses
+          </button>
         </div>
         <div className="row p-4">
           {this.props.tableau.colonnes.map(col => {
@@ -24,6 +32,7 @@ class Tableau extends Component {
                 onChangeQuestion={this.props.onChangeQuestion}
                 onChangeReponse={this.props.onChangeReponse}
                 onSubmitQR={this.props.onSubmitQR}
+                onShowReponse={this.props.onShowReponse}
               />
             );
           })}

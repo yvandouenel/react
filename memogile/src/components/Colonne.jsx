@@ -26,11 +26,13 @@ class Colonne extends Component {
                 carte={carte}
                 question={carte.question}
                 reponse={carte.reponse}
+                show_reponse={carte.show_reponse}
                 onRemove={this.props.onRemoveCarte}
                 onMoveCarte={this.props.onMoveCarte}
                 onChangeQuestion={this.props.onChangeQuestion}
                 onChangeReponse={this.props.onChangeReponse}
                 onSubmitQR={this.props.onSubmitQR}
+                onShowReponse={this.props.onShowReponse}
               />
             );
           })}

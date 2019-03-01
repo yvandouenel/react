@@ -6,6 +6,7 @@ class Tableaux extends Component {
     tableaux: [
       {
         id: 1,
+        visible: false,
         sujet: "js",
         colonnes: [
           {
@@ -14,6 +15,7 @@ class Tableaux extends Component {
             cartes: [
               {
                 id: 1,
+                show_reponse: false,
                 question: "Une question",
                 reponse: "Sa réponse"
               }
@@ -25,6 +27,7 @@ class Tableaux extends Component {
             cartes: [
               {
                 id: 2,
+                show_reponse: false,
                 question: "Une question",
                 reponse: "Sa réponse"
               }
@@ -36,6 +39,7 @@ class Tableaux extends Component {
             cartes: [
               {
                 id: 3,
+                show_reponse: false,
                 question: "Une question",
                 reponse: "Sa réponse"
               }
@@ -47,6 +51,7 @@ class Tableaux extends Component {
             cartes: [
               {
                 id: 4,
+                show_reponse: false,
                 question: "Une question",
                 reponse: "Sa réponse"
               }
@@ -57,6 +62,7 @@ class Tableaux extends Component {
       {
         id: 2,
         sujet: "react",
+        visible: false,
         colonnes: [
           {
             id: 5,
@@ -64,6 +70,7 @@ class Tableaux extends Component {
             cartes: [
               {
                 id: 5,
+                show_reponse: false,
                 question: "Une question",
                 reponse: "Sa réponse"
               }
@@ -72,6 +79,7 @@ class Tableaux extends Component {
           {
             id: 6,
             title: "Je sais un peu",
+            show_reponse: false,
             cartes: [
               {
                 id: 6,
@@ -86,6 +94,7 @@ class Tableaux extends Component {
             cartes: [
               {
                 id: 7,
+                show_reponse: false,
                 question: "Une question",
                 reponse: "Sa réponse"
               }
@@ -97,6 +106,7 @@ class Tableaux extends Component {
             cartes: [
               {
                 id: 8,
+                show_reponse: false,
                 question: "Une question",
                 reponse: "Sa réponse"
               }
@@ -132,7 +142,8 @@ class Tableaux extends Component {
     state.tableaux[tab_index].colonnes[col_index].cartes.push({
       id: this.totalCartes() + 1,
       question: "Une question",
-      reponse: "Sa réponse"
+      reponse: "Sa réponse",
+      show_reponse: false
     });
     this.setState(state);
   };
@@ -250,10 +261,55 @@ class Tableaux extends Component {
   };
 
   handleSubmit = event => {
-    console.log("test");
     alert("Une question ou une réponse ont été modifiées: ");
     event.preventDefault();
     return false;
+  };
+  toggleTableau = (event, tableau_event) => {
+    const state = { ...this.state };
+    const tableau_index = state.tableaux.indexOf(tableau_event);
+
+    // efface tous les tableaux
+    state.tableaux.forEach(tableau => (tableau.visible = false));
+
+    // Affiche le tableau concerné
+    state.tableaux[tableau_index].visible = true;
+    this.setState(state);
+  };
+
+  showReponse = (event, carte_event, colonne_event, tableau_event) => {
+    let state = { ...this.state };
+    let tableau_index = state.tableaux.indexOf(tableau_event);
+    let colonne_index = state.tableaux[tableau_index].colonnes.indexOf(
+      colonne_event
+    );
+    let carte_index = state.tableaux[tableau_index].colonnes[
+      colonne_index
+    ].cartes.indexOf(carte_event);
+
+    if (
+      state.tableaux[tableau_index].colonnes[colonne_index].cartes[carte_index]
+        .show_reponse
+    )
+      state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+        carte_index
+      ].show_reponse = false;
+    else
+      state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+        carte_index
+      ].show_reponse = true;
+
+    this.setState(state);
+  };
+  showAllReponse = (event, tableau_event) => {
+    let state = { ...this.state };
+    let tableau_index = state.tableaux.indexOf(tableau_event);
+    state.tableaux[tableau_index].colonnes.forEach(colonne => {
+      colonne.cartes.forEach(carte => {
+        carte.show_reponse = carte.show_reponse ? false : true;
+      });
+    });
+    this.setState(state);
   };
   render() {
     return (
@@ -262,7 +318,11 @@ class Tableaux extends Component {
           <div className="col-md-12">
             {this.state.tableaux.map(tableau => {
               return (
-                <button key={tableau.id} className="btn btn-warning m-2">
+                <button
+                  key={tableau.id}
+                  className="btn btn-warning m-2"
+                  onClick={e => this.toggleTableau(e, tableau)}
+                >
                   {tableau.sujet}
                 </button>
               );
@@ -272,18 +332,22 @@ class Tableaux extends Component {
 
         {this.state.tableaux.map(tableau => {
           return (
-            <Tableau
-              key={tableau.id}
-              id={tableau.id}
-              sujet={tableau.sujet}
-              tableau={tableau}
-              onMoveCarte={this.moveCarte}
-              onRemoveCarte={this.removeCarte}
-              onAddCarte={this.addCarte}
-              onChangeQuestion={this.handleChangeQuestion}
-              onChangeReponse={this.handleChangeReponse}
-              onSubmitQR={this.handleSubmit}
-            />
+            tableau.visible && (
+              <Tableau
+                key={tableau.id}
+                id={tableau.id}
+                sujet={tableau.sujet}
+                tableau={tableau}
+                onMoveCarte={this.moveCarte}
+                onRemoveCarte={this.removeCarte}
+                onAddCarte={this.addCarte}
+                onChangeQuestion={this.handleChangeQuestion}
+                onChangeReponse={this.handleChangeReponse}
+                onSubmitQR={this.handleSubmit}
+                onShowReponse={this.showReponse}
+                onShowAllReponse={this.showAllReponse}
+              />
+            )
           );
         })}
       </div>
