@@ -149,20 +149,22 @@ class Tableaux extends Component {
   };
 
   removeCarte = (carte_event, colonne_event, tableau_event) => {
-    const state = { ...this.state };
-    const tabeau_index = state.tableaux.indexOf(tableau_event);
-    const colonne_index = state.tableaux[tabeau_index].colonnes.indexOf(
-      colonne_event
-    );
+    if (window.confirm("Sûr.e de vouloir supprimer cette carte ?")) {
+      const state = { ...this.state };
+      const tabeau_index = state.tableaux.indexOf(tableau_event);
+      const colonne_index = state.tableaux[tabeau_index].colonnes.indexOf(
+        colonne_event
+      );
 
-    //on supprime la carte en filtrant le clone du state
-    state.tableaux[tabeau_index].colonnes[
-      colonne_index
-    ].cartes = state.tableaux[tabeau_index].colonnes[
-      colonne_index
-    ].cartes.filter(carte => carte.id !== carte_event.id);
+      //on supprime la carte en filtrant le clone du state
+      state.tableaux[tabeau_index].colonnes[
+        colonne_index
+      ].cartes = state.tableaux[tabeau_index].colonnes[
+        colonne_index
+      ].cartes.filter(carte => carte.id !== carte_event.id);
 
-    this.setState(state);
+      this.setState(state);
+    }
   };
   /**
    * 1 Cloner la carte du state

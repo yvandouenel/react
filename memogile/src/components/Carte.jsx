@@ -46,7 +46,7 @@ class Carte extends Component {
           </div>
           <div className="panel panel-default  p-2 ">
             <div
-              className="panel-body question m-2 p-2"
+              className="panel-body question m-2 p-2 cursor-pointer hover-red"
               onClick={e => {
                 this.props.onShowReponse(
                   e,
@@ -60,31 +60,33 @@ class Carte extends Component {
             </div>
 
             {this.props.show_reponse && (
-              <div className="panel-footer reponse border border-success m-2 p-2">
-                {this.props.reponse}
+              <div>
+                <div className="panel-footer reponse border border-success m-2 p-2">
+                  {this.props.reponse}
+                </div>
+                <div className="pl-4">
+                  <Button variant="primary" onClick={this.handleShow}>
+                    Modifier
+                  </Button>
+                  <Button
+                    variant="warning"
+                    onClick={() =>
+                      this.props.onRemove(
+                        this.props.carte,
+                        this.props.colonne,
+                        this.props.tableau
+                      )
+                    }
+                    className="ml-4 bg-danger text-white"
+                  >
+                    Supprimer
+                  </Button>
+                </div>
               </div>
             )}
           </div>
 
           {/* modal */}
-          <div className="pl-4">
-            <Button variant="primary" onClick={this.handleShow}>
-              Modifier
-            </Button>
-            <Button
-              variant="warning"
-              onClick={() =>
-                this.props.onRemove(
-                  this.props.carte,
-                  this.props.colonne,
-                  this.props.tableau
-                )
-              }
-              className="ml-4 bg-danger text-white"
-            >
-              Supprimer
-            </Button>
-          </div>
 
           <Modal show={this.state.show} onHide={this.handleClose}>
             <Modal.Header closeButton>

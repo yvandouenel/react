@@ -1,3 +1,9 @@
 .cursor-pointer:hover {
     cursor: pointer;
 }
+
+.hover-red:hover {
+    background-color: black;
+    color: white;
+    border-radius: 8px;
+}
