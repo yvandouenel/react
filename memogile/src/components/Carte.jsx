@@ -34,14 +34,24 @@ class Carte extends Component {
           <div className="float-right mt-4 cursor-pointer">
             <FaAngleRight
               onClick={() =>
-                this.props.onMoveCarte(this, this.props.colonne.id, "right")
+                this.props.onMoveCarte(
+                  this.props.carte,
+                  this.props.colonne,
+                  this.props.tableau,
+                  "right"
+                )
               }
             />
           </div>
           <div className="float-left mt-4 cursor-pointer">
             <FaAngleLeft
               onClick={() =>
-                this.props.onMoveCarte(this, this.props.colonne.id, "left")
+                this.props.onMoveCarte(
+                  this.props.carte,
+                  this.props.colonne,
+                  this.props.tableau,
+                  "left"
+                )
               }
             />
           </div>
@@ -62,7 +72,13 @@ class Carte extends Component {
             </Button>
             <Button
               variant="warning"
-              onClick={() => this.props.onRemove(this, this.props.colonne.id)}
+              onClick={() =>
+                this.props.onRemove(
+                  this.props.carte,
+                  this.props.colonne,
+                  this.props.tableau
+                )
+              }
               className="ml-4 bg-danger text-white"
             >
               Supprimer
@@ -87,7 +103,8 @@ class Carte extends Component {
                         this.props.onChangeQuestion(
                           e,
                           this.props.carte,
-                          this.props.colonne
+                          this.props.colonne,
+                          this.props.tableau
                         )
                       }
                     />
@@ -102,7 +119,8 @@ class Carte extends Component {
                         this.props.onChangeReponse(
                           e,
                           this.props.carte,
-                          this.props.colonne
+                          this.props.colonne,
+                          this.props.tableau
                         )
                       }
                     />

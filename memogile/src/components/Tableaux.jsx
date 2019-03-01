@@ -127,10 +127,8 @@ class Tableaux extends Component {
   addCarte = (col_event, tableau_event) => {
     const state = { ...this.state };
     const tab_index = state.tableaux.indexOf(tableau_event);
-    console.log("Ajout carte sur le tableau ", tab_index);
-
     const col_index = state.tableaux[tab_index].colonnes.indexOf(col_event);
-    console.log(" et sur la colonne ", col_index);
+
     state.tableaux[tab_index].colonnes[col_index].cartes.push({
       id: this.totalCartes() + 1,
       question: "Une question",
@@ -138,14 +136,20 @@ class Tableaux extends Component {
     });
     this.setState(state);
   };
-  removeCarte = (carte_react, col_react_id) => {
-    //console.log("remove Carte", carte_react, col_react_id);
-    console.log("remove Carte", carte_react.props.id, col_react_id);
+
+  removeCarte = (carte_event, colonne_event, tableau_event) => {
     const state = { ...this.state };
-    const col = state.colonnes.find(c => c.id === col_react_id);
-    state.colonnes[col.id - 1].cartes = state.colonnes[
-      col.id - 1
-    ].cartes.filter(carte => carte.id !== carte_react.props.id);
+    const tabeau_index = state.tableaux.indexOf(tableau_event);
+    const colonne_index = state.tableaux[tabeau_index].colonnes.indexOf(
+      colonne_event
+    );
+
+    //on supprime la carte en filtrant le clone du state
+    state.tableaux[tabeau_index].colonnes[
+      colonne_index
+    ].cartes = state.tableaux[tabeau_index].colonnes[
+      colonne_index
+    ].cartes.filter(carte => carte.id !== carte_event.id);
 
     this.setState(state);
   };
@@ -154,39 +158,53 @@ class Tableaux extends Component {
    * 2 la suprimer
    * 3 l'ajouter dans la colonne voulue
    */
-  moveCarte = (carte_react, col_react_id, direction) => {
-    //console.log(carte_react, col_react_id, direction);
+  moveCarte = (carte_event, col_event, tableau_event, direction) => {
+    console.log(carte_event, col_event, tableau_event, direction);
     const state = { ...this.state };
-    const col = state.colonnes.find(col => col.id === col_react_id);
+    const index_tableau = this.state.tableaux.indexOf(tableau_event);
+    const index_colonne = this.state.tableaux[index_tableau].colonnes.indexOf(
+      col_event
+    );
+
     // clonage de la carte
-    const carte = {
-      ...state.colonnes[col.id - 1].cartes.find(
-        carte => carte.id === carte_react.props.id
-      )
-    };
-    console.log(carte);
+    const carte = { ...carte_event };
+
     switch (direction) {
       case "right":
-        if (col_react_id < this.state.colonnes.length) {
+        if (
+          index_colonne <
+          this.state.tableaux[index_tableau].colonnes.length - 1
+        ) {
           // On enlève la carte de la colonne
-          state.colonnes[col.id - 1].cartes = state.colonnes[
-            col.id - 1
-          ].cartes.filter(carte => carte.id !== carte_react.props.id);
+          state.tableaux[index_tableau].colonnes[
+            index_colonne
+          ].cartes = state.tableaux[index_tableau].colonnes[
+            index_colonne
+          ].cartes.filter(c => c.id !== carte.id);
 
           // On l'ajoute dans la colonne suivante
-          state.colonnes[col.id].cartes.push(carte);
-        }
+          state.tableaux[index_tableau].colonnes[index_colonne + 1].cartes.push(
+            carte
+          );
+        } else
+          console.log("Cette carte est déjà dans la colonne la plus à droite");
         break;
       case "left":
-        if (col_react_id > 1) {
+        if (index_colonne > 0) {
           // On enlève la carte de la colonne
-          state.colonnes[col.id - 1].cartes = state.colonnes[
-            col.id - 1
-          ].cartes.filter(carte => carte.id !== carte_react.props.id);
+          state.tableaux[index_tableau].colonnes[
+            index_colonne
+          ].cartes = state.tableaux[index_tableau].colonnes[
+            index_colonne
+          ].cartes.filter(c => c.id !== carte.id);
 
           // On l'ajoute dans la colonne suivante
-          state.colonnes[col.id - 2].cartes.push(carte);
-        }
+          state.tableaux[index_tableau].colonnes[index_colonne - 1].cartes.push(
+            carte
+          );
+        } else
+          console.log("Cette carte est déjà dans la colonne la plus à gauche");
+
         break;
     }
 
@@ -196,13 +214,18 @@ class Tableaux extends Component {
    * Récupération de l'émetteur de l'événement + de la carte + de la colonne
    * Il faut passer par col_index et carte_index pour changer le clone du state
    */
-  handleChangeQuestion = (event, carte_event, col_event) => {
-    console.log("carte: " + carte_event + " - col : " + col_event);
-
+  handleChangeQuestion = (event, carte_event, colonne_event, tableau_event) => {
     let state = { ...this.state };
-    let col_index = state.colonnes.indexOf(col_event);
-    let carte_index = state.colonnes[col_index].cartes.indexOf(carte_event);
-    state.colonnes[col_index].cartes[carte_index].question = event.target.value;
+    let tableau_index = state.tableaux.indexOf(tableau_event);
+    let colonne_index = state.tableaux[tableau_index].colonnes.indexOf(
+      colonne_event
+    );
+    let carte_index = state.tableaux[tableau_index].colonnes[
+      colonne_index
+    ].cartes.indexOf(carte_event);
+    state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+      carte_index
+    ].question = event.target.value;
     this.setState(state);
     event.preventDefault();
   };
@@ -210,14 +233,20 @@ class Tableaux extends Component {
    * Récupération de l'émetteur de l'événement + de la carte + de la colonne
    * Il faut passer par col_index et carte_index pour changer le clone du state
    */
-  handleChangeReponse = (event, carte_event, col_event) => {
-    console.log("carte: " + carte_event + " - col : " + col_event);
-
+  handleChangeReponse = (event, carte_event, colonne_event, tableau_event) => {
     let state = { ...this.state };
-    let col_index = state.colonnes.indexOf(col_event);
-    let carte_index = state.colonnes[col_index].cartes.indexOf(carte_event);
-    state.colonnes[col_index].cartes[carte_index].reponse = event.target.value;
+    let tableau_index = state.tableaux.indexOf(tableau_event);
+    let colonne_index = state.tableaux[tableau_index].colonnes.indexOf(
+      colonne_event
+    );
+    let carte_index = state.tableaux[tableau_index].colonnes[
+      colonne_index
+    ].cartes.indexOf(carte_event);
+    state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+      carte_index
+    ].reponse = event.target.value;
     this.setState(state);
+    event.preventDefault();
   };
 
   handleSubmit = event => {
@@ -233,7 +262,9 @@ class Tableaux extends Component {
           <div className="col-md-12">
             {this.state.tableaux.map(tableau => {
               return (
-                <button className="btn btn-warning m-2">{tableau.sujet}</button>
+                <button key={tableau.id} className="btn btn-warning m-2">
+                  {tableau.sujet}
+                </button>
               );
             })}
           </div>
