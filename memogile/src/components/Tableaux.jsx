@@ -316,19 +316,22 @@ class Tableaux extends Component {
   render() {
     return (
       <div>
-        <div className="row pl-4 pr-4">
-          <div className="col-md-12">
-            {this.state.tableaux.map(tableau => {
-              return (
-                <button
-                  key={tableau.id}
-                  className="btn btn-warning m-2"
-                  onClick={e => this.toggleTableau(e, tableau)}
-                >
-                  {tableau.sujet}
-                </button>
-              );
-            })}
+        <div className="container">
+          <div className="row">
+            <div className="col-md-12">
+              {this.state.tableaux.map(tableau => {
+                return (
+                  <button
+                    key={tableau.id}
+                    className="btn btn-warning"
+                    style={{ marginRight: "20px", marginBottom: "30px" }}
+                    onClick={e => this.toggleTableau(e, tableau)}
+                  >
+                    {tableau.sujet}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
