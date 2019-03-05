@@ -11,7 +11,7 @@ class User extends Component {
               style={{ width: "100px" }}
             />
           </div>
-          <div className="col-md-10">
+          <div className="col-md-10 text-white">
             {this.props.data.email} - Identifié par{" "}
             {this.props.data.providerData[0].providerId}
           </div>

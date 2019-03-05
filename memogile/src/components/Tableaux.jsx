@@ -324,7 +324,7 @@ class Tableaux extends Component {
                   <button
                     key={tableau.id}
                     className="btn btn-warning"
-                    style={{ marginRight: "20px", marginBottom: "30px" }}
+                    style={{ marginRight: "20px", marginBottom: "0" }}
                     onClick={e => this.toggleTableau(e, tableau)}
                   >
                     {tableau.sujet}

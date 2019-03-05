@@ -5,10 +5,10 @@ class Tableau extends Component {
   render() {
     return (
       <div>
-        <div className="row p-4 justify-content-center">
+        <div className="row justify-content-center text-white">
           <h1 className="text-light">{this.props.sujet}</h1>
           <button
-            className="btn"
+            className="btn text-white"
             onClick={e => {
               this.props.onShowAllReponse(e, this.props.tableau);
             }}
@@ -16,7 +16,7 @@ class Tableau extends Component {
             Voir toutes les réponses
           </button>
         </div>
-        <div className="row p-4">
+        <div className="row">
           {this.props.tableau.colonnes.map(col => {
             return (
               <Colonne

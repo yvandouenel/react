@@ -91,7 +91,7 @@ class App extends Component {
             >
               {({ providerId, user }) => {
                 return (
-                  <div>
+                  <div style={{ marginTop: "15px" }}>
                     <User key="1" data={user} />
                     {/*Hello {JSON.stringify({ user }, null, 2)}, */}
                   </div>
