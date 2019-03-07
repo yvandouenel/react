@@ -15,7 +15,7 @@ import Tableaux from "./Tableaux";
 import User from "./User";
 class App extends Component {
   logInfoUSer = text => {
-    console.log(text);
+    //console.log(text);
   };
   render() {
     return (

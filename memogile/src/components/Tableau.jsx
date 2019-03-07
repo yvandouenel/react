@@ -6,7 +6,19 @@ class Tableau extends Component {
     return (
       <div>
         <div className="row justify-content-center text-white">
-          <h1 className="text-light">{this.props.sujet}</h1>
+          <h1 className="text-light sr-only">{this.props.sujet}</h1>
+          <form onSubmit={this.props.onSubmitLabelTableau}>
+            <label>
+              <input
+                type="text"
+                className="ml-4 input-label-tableau text-light"
+                value={this.props.tableau.sujet}
+                onChange={e =>
+                  this.props.onChangeLabelTableau(e, this.props.tableau)
+                }
+              />
+            </label>
+          </form>
           <button
             className="btn text-white"
             onClick={e => {

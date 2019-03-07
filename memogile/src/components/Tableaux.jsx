@@ -1,120 +1,25 @@
 import React, { Component } from "react";
 import Tableau from "./Tableau";
 
+var tableaux = require("../config/tableaux.json");
+console.log(tableaux);
+
 class Tableaux extends Component {
-  state = {
-    tableaux: [
-      {
-        id: 1,
-        visible: false,
-        sujet: "js",
-        colonnes: [
-          {
-            id: 1,
-            title: "En cours d'apprentissage",
-            cartes: [
-              {
-                id: 1,
-                show_reponse: false,
-                question: "Une question",
-                reponse: "Sa réponse"
-              }
-            ]
-          },
-          {
-            id: 2,
-            title: "Je sais un peu",
-            cartes: [
-              {
-                id: 2,
-                show_reponse: false,
-                question: "Une question",
-                reponse: "Sa réponse"
-              }
-            ]
-          },
-          {
-            id: 3,
-            title: "Je sais bien",
-            cartes: [
-              {
-                id: 3,
-                show_reponse: false,
-                question: "Une question",
-                reponse: "Sa réponse"
-              }
-            ]
-          },
-          {
-            id: 4,
-            title: "Je sais très bien",
-            cartes: [
-              {
-                id: 4,
-                show_reponse: false,
-                question: "Une question",
-                reponse: "Sa réponse"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 2,
-        sujet: "react",
-        visible: false,
-        colonnes: [
-          {
-            id: 5,
-            title: "En cours d'apprentissage",
-            cartes: [
-              {
-                id: 5,
-                show_reponse: false,
-                question: "Une question",
-                reponse: "Sa réponse"
-              }
-            ]
-          },
-          {
-            id: 6,
-            title: "Je sais un peu",
-            show_reponse: false,
-            cartes: [
-              {
-                id: 6,
-                question: "Une question",
-                reponse: "Sa réponse"
-              }
-            ]
-          },
-          {
-            id: 7,
-            title: "Je sais bien",
-            cartes: [
-              {
-                id: 7,
-                show_reponse: false,
-                question: "Une question",
-                reponse: "Sa réponse"
-              }
-            ]
-          },
-          {
-            id: 8,
-            title: "Je sais très bien",
-            cartes: [
-              {
-                id: 8,
-                show_reponse: false,
-                question: "Une question",
-                reponse: "Sa réponse"
-              }
-            ]
-          }
-        ]
-      }
-    ]
+  constructor(props) {
+    super(props);
+    this.state = {
+      show_answers: false,
+      tableaux: []
+    };
+    this.saveData();
+  }
+  saveData = () => {
+    console.log("Hello dans saveData");
+    console.log(this);
+    setInterval(() => {
+      this.writeJson();
+      //console.log(this);
+    }, 10000);
   };
   totalCartes = () => {
     let total = 0;
@@ -128,6 +33,32 @@ class Tableaux extends Component {
 
     return total;
   };
+  componentWillMount() {
+    fetch("http://localhost:3003/api/tableaux")
+      .then(response => response.json())
+      .then(
+        tableaux =>
+          this.setState({ show_answers: false, tableaux: tableaux.tableaux })
+        //console.log({ show_answers: false, tableaux: tableaux.tableaux })
+      );
+  }
+  writeJson = () => {
+    console.log("Ecriture json");
+
+    let json = {
+      tableaux: this.state.tableaux
+    };
+    fetch("http://localhost:3003/api/writetableaux", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(json)
+    });
+  };
+
+  componentDidUpdate(prevProps, prevState) {}
 
   /**
    * La première chose est de faire le rapprochement entre la colonne du state et la colonne en tant qu'élément de React
@@ -144,6 +75,66 @@ class Tableaux extends Component {
       question: "Une question",
       reponse: "Sa réponse",
       show_reponse: false
+    });
+    this.setState(state);
+  };
+
+  addTableau = event => {
+    const state = { ...this.state };
+    state.tableaux.push({
+      id: state.tableaux.length + 1,
+      visible: true,
+      sujet: "Nouveau tableau",
+      colonnes: [
+        {
+          id: 1,
+          title: "En cours ",
+          cartes: [
+            {
+              id: 1,
+              show_reponse: true,
+              question: "Vrai question ?",
+              reponse: "Sa réponse"
+            }
+          ]
+        },
+        {
+          id: 2,
+          title: "Je sais un peu",
+          cartes: [
+            {
+              id: 2,
+              show_reponse: false,
+              question: "Une question",
+              reponse: "Sa réponse"
+            }
+          ]
+        },
+        {
+          id: 3,
+          title: "Je sais bien",
+          cartes: [
+            {
+              id: 3,
+              show_reponse: false,
+              question: "Une question",
+              reponse: "Sa réponse"
+            }
+          ]
+        },
+        {
+          id: 4,
+          title: "Je sais très bien",
+          cartes: [
+            {
+              id: 4,
+              show_reponse: false,
+              question: "Une question",
+              reponse: "Sa réponse"
+            }
+          ]
+        }
+      ]
     });
     this.setState(state);
   };
@@ -261,12 +252,26 @@ class Tableaux extends Component {
     this.setState(state);
     event.preventDefault();
   };
+  handleChangeLabelTableau = (event, tableau_event) => {
+    let state = { ...this.state };
+    let tableau_index = state.tableaux.indexOf(tableau_event);
+
+    state.tableaux[tableau_index].sujet = event.target.value;
+    this.setState(state);
+    event.preventDefault();
+  };
 
   handleSubmit = event => {
-    alert("Une question ou une réponse ont été modifiées: ");
+    alert("Une question ou une réponse ont été modifiées");
     event.preventDefault();
     return false;
   };
+  handleSubmitLabelTableau = event => {
+    alert("Un label de tableau a été modifié");
+    event.preventDefault();
+    return false;
+  };
+
   toggleTableau = (event, tableau_event) => {
     const state = { ...this.state };
     const tableau_index = state.tableaux.indexOf(tableau_event);
@@ -303,34 +308,48 @@ class Tableaux extends Component {
 
     this.setState(state);
   };
-  showAllReponse = (event, tableau_event) => {
+  showAllReponse = (event, tableau_event, hide) => {
     let state = { ...this.state };
     let tableau_index = state.tableaux.indexOf(tableau_event);
     state.tableaux[tableau_index].colonnes.forEach(colonne => {
       colonne.cartes.forEach(carte => {
-        carte.show_reponse = carte.show_reponse ? false : true;
+        carte.show_reponse = state.show_answers ? false : true;
       });
     });
+    if (hide !== undefined) {
+      state.show_answers = false;
+    } else state.show_answers = state.show_answers ? false : true;
     this.setState(state);
   };
+
   render() {
     return (
       <div>
         <div className="container">
           <div className="row">
             <div className="col-md-12">
-              {this.state.tableaux.map(tableau => {
-                return (
-                  <button
-                    key={tableau.id}
-                    className="btn btn-warning"
-                    style={{ marginRight: "20px", marginBottom: "0" }}
-                    onClick={e => this.toggleTableau(e, tableau)}
-                  >
-                    {tableau.sujet}
-                  </button>
-                );
-              })}
+              {this.state.tableaux
+                .map(tableau => {
+                  return (
+                    <button
+                      key={tableau.id}
+                      className="btn btn-warning"
+                      style={{ marginRight: "20px", marginBottom: "0" }}
+                      onClick={e => this.toggleTableau(e, tableau)}
+                    >
+                      {tableau.sujet}
+                    </button>
+                  );
+                })
+                .sort()}
+              <button
+                className="btn text-white"
+                onClick={e => {
+                  this.addTableau(e);
+                }}
+              >
+                Ajouter un tableau
+              </button>
             </div>
           </div>
         </div>
@@ -348,7 +367,9 @@ class Tableaux extends Component {
                 onAddCarte={this.addCarte}
                 onChangeQuestion={this.handleChangeQuestion}
                 onChangeReponse={this.handleChangeReponse}
+                onChangeLabelTableau={this.handleChangeLabelTableau}
                 onSubmitQR={this.handleSubmit}
+                onSubmitLabelTableau={this.handleSubmitLabelTableau}
                 onShowReponse={this.showReponse}
                 onShowAllReponse={this.showAllReponse}
               />
