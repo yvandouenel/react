@@ -7,3 +7,10 @@
     color: white;
     border-radius: 8px;
 }
+
+.input-label-tableau {
+    border: 0;
+    color: white;
+    background-color: #6B737D;
+    font-size: 3em;
+}
