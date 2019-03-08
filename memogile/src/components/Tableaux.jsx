@@ -14,8 +14,6 @@ class Tableaux extends Component {
     this.saveData();
   }
   saveData = () => {
-    console.log("Hello dans saveData");
-    console.log(this);
     setInterval(() => {
       this.writeJson();
       //console.log(this);
@@ -36,17 +34,16 @@ class Tableaux extends Component {
   componentWillMount() {
     fetch("http://localhost:3003/api/tableaux")
       .then(response => response.json())
-      .then(
-        tableaux =>
-          this.setState({ show_answers: false, tableaux: tableaux.tableaux })
-        //console.log({ show_answers: false, tableaux: tableaux.tableaux })
+      .then(tableaux =>
+        this.setState({ show_answers: false, tableaux: tableaux.tableaux })
       );
   }
   writeJson = () => {
     console.log("Ecriture json");
-
+    let state = { ...this.state };
+    state = this.setCartesToInvisible(state);
     let json = {
-      tableaux: this.state.tableaux
+      tableaux: state.tableaux
     };
     fetch("http://localhost:3003/api/writetableaux", {
       method: "POST",
@@ -57,7 +54,18 @@ class Tableaux extends Component {
       body: JSON.stringify(json)
     });
   };
-
+  setCartesToInvisible = state => {
+    state.tableaux.forEach(tableau => {
+      if (tableau.visible) {
+        tableau.colonnes.forEach(colonne => {
+          colonne.cartes.forEach(carte => {
+            carte.show_reponse = false;
+          });
+        });
+      }
+    });
+    return state;
+  };
   componentDidUpdate(prevProps, prevState) {}
 
   /**
@@ -81,6 +89,11 @@ class Tableaux extends Component {
 
   addTableau = event => {
     const state = { ...this.state };
+    state.tableaux.forEach(tableau => {
+      if (tableau.visible) {
+        tableau.visible = false;
+      }
+    });
     state.tableaux.push({
       id: state.tableaux.length + 1,
       visible: true,
@@ -89,50 +102,22 @@ class Tableaux extends Component {
         {
           id: 1,
           title: "En cours ",
-          cartes: [
-            {
-              id: 1,
-              show_reponse: true,
-              question: "Vrai question ?",
-              reponse: "Sa réponse"
-            }
-          ]
+          cartes: []
         },
         {
           id: 2,
           title: "Je sais un peu",
-          cartes: [
-            {
-              id: 2,
-              show_reponse: false,
-              question: "Une question",
-              reponse: "Sa réponse"
-            }
-          ]
+          cartes: []
         },
         {
           id: 3,
           title: "Je sais bien",
-          cartes: [
-            {
-              id: 3,
-              show_reponse: false,
-              question: "Une question",
-              reponse: "Sa réponse"
-            }
-          ]
+          cartes: []
         },
         {
           id: 4,
           title: "Je sais très bien",
-          cartes: [
-            {
-              id: 4,
-              show_reponse: false,
-              question: "Une question",
-              reponse: "Sa réponse"
-            }
-          ]
+          cartes: []
         }
       ]
     });
@@ -153,6 +138,19 @@ class Tableaux extends Component {
       ].cartes = state.tableaux[tabeau_index].colonnes[
         colonne_index
       ].cartes.filter(carte => carte.id !== carte_event.id);
+
+      this.setState(state);
+    }
+  };
+  removeTableau = (e, tableau_event) => {
+    console.log("dans remove tableau", tableau_event);
+    if (window.confirm("Sûr.e de vouloir supprimer ce tableau ?")) {
+      const state = { ...this.state };
+
+      //on supprime le tableau en filtrant le clone du state
+      state.tableaux = state.tableaux.filter(
+        tableau => tableau.id !== tableau_event.id
+      );
 
       this.setState(state);
     }
@@ -262,12 +260,10 @@ class Tableaux extends Component {
   };
 
   handleSubmit = event => {
-    alert("Une question ou une réponse ont été modifiées");
     event.preventDefault();
     return false;
   };
   handleSubmitLabelTableau = event => {
-    alert("Un label de tableau a été modifié");
     event.preventDefault();
     return false;
   };
@@ -321,7 +317,22 @@ class Tableaux extends Component {
     } else state.show_answers = state.show_answers ? false : true;
     this.setState(state);
   };
+  manageButtonLabelClass = visible => {
+    return visible ? "btn btn-warning btn-dark" : "btn btn-warning";
+  };
 
+  compareLabelTableau = (a, b) => {
+    const sujetA = a.sujet.toUpperCase();
+    const sujetB = b.sujet.toUpperCase();
+
+    let comparison = 0;
+    if (sujetA > sujetB) {
+      comparison = 1;
+    } else if (sujetA < sujetB) {
+      comparison = -1;
+    }
+    return comparison;
+  };
   render() {
     return (
       <div>
@@ -329,19 +340,19 @@ class Tableaux extends Component {
           <div className="row">
             <div className="col-md-12">
               {this.state.tableaux
+                .sort(this.compareLabelTableau)
                 .map(tableau => {
                   return (
                     <button
                       key={tableau.id}
-                      className="btn btn-warning"
+                      className={this.manageButtonLabelClass(tableau.visible)}
                       style={{ marginRight: "20px", marginBottom: "0" }}
                       onClick={e => this.toggleTableau(e, tableau)}
                     >
                       {tableau.sujet}
                     </button>
                   );
-                })
-                .sort()}
+                })}
               <button
                 className="btn text-white"
                 onClick={e => {
@@ -368,6 +379,7 @@ class Tableaux extends Component {
                 onChangeQuestion={this.handleChangeQuestion}
                 onChangeReponse={this.handleChangeReponse}
                 onChangeLabelTableau={this.handleChangeLabelTableau}
+                onRemoveTableau={this.removeTableau}
                 onSubmitQR={this.handleSubmit}
                 onSubmitLabelTableau={this.handleSubmitLabelTableau}
                 onShowReponse={this.showReponse}
