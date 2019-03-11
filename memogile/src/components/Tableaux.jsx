@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import Tableau from "./Tableau";
 
-var tableaux = require("../config/tableaux.json");
-console.log(tableaux);
+//var tableaux = require("../config/tableaux.json");
 
 class Tableaux extends Component {
   constructor(props) {
@@ -14,31 +13,24 @@ class Tableaux extends Component {
     this.saveData();
   }
   saveData = () => {
-    setInterval(() => {
+
+    let state = { ...this.state };
+    state = this.setCartesToInvisible(state);
+    let data = {
+      tableaux: state.tableaux
+    };
+    //this.props.neore.postMemo(this.props.email, data, false, false, false);
+    /* setInterval(() => {
+      console.log("Ecriture json sur serveur");
+      this.props.neore.postMemo(this.props.email, data, false, false, false);
+    }, 5000); */
+    //postMemo = (email, data, success, before, progress)
+    /* setInterval(() => {
       this.writeJson();
       //console.log(this);
-    }, 10000);
+    }, 50000); */
   };
-  totalCartes = () => {
-    let total = 0;
-    this.state.tableaux.forEach(function(tableau) {
-      tableau.colonnes.forEach(function(col) {
-        col.cartes.forEach(function(carte) {
-          total++;
-        });
-      });
-    });
-
-    return total;
-  };
-  componentWillMount() {
-    fetch("http://localhost:3003/api/tableaux")
-      .then(response => response.json())
-      .then(tableaux =>
-        this.setState({ show_answers: false, tableaux: tableaux.tableaux })
-      );
-  }
-  writeJson = () => {
+  /* writeJson = () => {
     console.log("Ecriture json");
     let state = { ...this.state };
     state = this.setCartesToInvisible(state);
@@ -53,7 +45,31 @@ class Tableaux extends Component {
       },
       body: JSON.stringify(json)
     });
+  }; */
+  totalCartes = () => {
+    let total = 0;
+    this.state.tableaux.forEach(function(tableau) {
+      tableau.colonnes.forEach(function(col) {
+        col.cartes.forEach(function(carte) {
+          total++;
+        });
+      });
+    });
+
+    return total;
   };
+  componentWillMount() {
+    console.log("////////////////");
+    console.log("Email dans willMount", this.props.email);
+    /* const tableaux = this.props.neore.getMemo(this.props.email, false, false, false);
+    console.log(tableaux); */
+    /* fetch("http://localhost:3003/api/tableaux")
+      .then(response => response.json())
+      .then(tableaux =>
+        this.setState({ show_answers: false, tableaux: tableaux.tableaux })
+      ); */
+  }
+
   setCartesToInvisible = state => {
     state.tableaux.forEach(tableau => {
       if (tableau.visible) {
@@ -206,8 +222,11 @@ class Tableaux extends Component {
           );
         } else
           console.log("Cette carte est déjà dans la colonne la plus à gauche");
-
         break;
+      default:
+        console.log(
+          'La méthode moveCarte attend comme paramètre "left" ou "right"'
+        );
     }
 
     this.setState(state);
