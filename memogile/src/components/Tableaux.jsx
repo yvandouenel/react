@@ -12,13 +12,14 @@ class Tableaux extends Component {
     };
     this.saveData();
   }
+  componentWillMount() {
+    this.setState({ show_answers: false, tableaux: this.props.data.tableaux });
+  }
   saveData = () => {
 
     let state = { ...this.state };
     state = this.setCartesToInvisible(state);
-    let data = {
-      tableaux: state.tableaux
-    };
+
     //this.props.neore.postMemo(this.props.email, data, false, false, false);
     /* setInterval(() => {
       console.log("Ecriture json sur serveur");
@@ -58,17 +59,7 @@ class Tableaux extends Component {
 
     return total;
   };
-  componentWillMount() {
-    console.log("////////////////");
-    console.log("Email dans willMount", this.props.email);
-    /* const tableaux = this.props.neore.getMemo(this.props.email, false, false, false);
-    console.log(tableaux); */
-    /* fetch("http://localhost:3003/api/tableaux")
-      .then(response => response.json())
-      .then(tableaux =>
-        this.setState({ show_answers: false, tableaux: tableaux.tableaux })
-      ); */
-  }
+
 
   setCartesToInvisible = state => {
     state.tableaux.forEach(tableau => {

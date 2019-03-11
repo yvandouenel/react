@@ -9,22 +9,39 @@ class App extends Component {
     super(props);
     this.state = {
       isLogged: false,
-      email: ""
+      email: "",
+      data: {}
     };
     this.email = "";
   }
-
+  isEmpty = (obj) => {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
   successSign = (data, email) => {
     const state = { ...this.state };
     state.isLogged = true;
     state.email = email;
     this.setState(state);
   };
+  successGetMemo = (data, email) => {
+    const state = { ...this.state };
+    state.data = data.data;
+
+    this.setState(state);
+    console.log("data dans le state :",this.state.data);
+
+  };
   render() {
     return (
       <div>
-        {(this.state.isLogged === false) && <Neore onSuccessSign={this.successSign} />}
-        {this.state.isLogged && <Tableaux key="1" neore={this.state.neore} email={this.state.email}  />}
+
+        {(this.state.isLogged === false) && <Neore onSuccessSign={this.successSign} onSuccessGetMemo={this.successGetMemo} />}
+        {this.state.isLogged && <div>Vous êtes identifié.e.s</div>}
+        {!this.isEmpty(this.state.data) && <Tableaux key="1" data={this.state.data} email={this.state.email}  />}
       </div>
     );
   }

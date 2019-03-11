@@ -35,39 +35,7 @@ class Neore extends Component {
     return false;
   };
 
-  render() {
-    return (
-      <div>
-        <form
-          onSubmit={e => {
-            this.submitSign(e);
-          }}
-        >
-          <label>
-            Email:
-            <input
-              type="email"
-              className="ml-4"
-              id="signemail"
-              value="y.douenel@coopernet.fr"
-              onChange={e => this.changeFormSign(e)}
-            />
-          </label>
-          <label>
-            Mot de passe :
-            <input
-              type="password"
-              className="ml-4"
-              id="signpwd"
-              value="test"
-              onChange={e => this.changeFormSign(e)}
-            />
-          </label>
-          <button type="submit">Se connecter</button>
-        </form>
-      </div>
-    );
-  }
+
   /* getMemo
 La fonction pour récupérer les données sur le serveur.
 La fonction demande quelques arguments :
@@ -112,6 +80,12 @@ La fonction demande quelques arguments :
           // Tu commences à comprendre à quoi ça sert la fonction de callback ?
           console.log("EMAIL : ", email);
           success(data, email);
+
+          // on sauvegarde toutes les 10 s
+          /* setInterval(() => {
+            console.log("Ecriture json sur serveur");
+            this.postMemo(email, data, false, false, false);
+          }, 5000); */
 
           // ON RETOURNE QU'ON EST BIEN CONTENT
           return true;
@@ -337,7 +311,7 @@ La fonction demande quelques arguments :
     httpRequest.timeout = 30000;
 
     // ON DEFINI UN ECOUTEUR SUR LE CHANGEMENT D'ETAT DE LA CONNEXION
-    httpRequest.onreadystatechange = function() {
+    httpRequest.onreadystatechange = () => {
       // ON ECOUTE SI LA CONNEXION EST TERMINE AVEC SUCCESS
       if (httpRequest.readyState === XMLHttpRequest.DONE) {
         // SI ON RECUPERE UN CODE 200 (Indiquant que tout s'est bien passé)
@@ -354,6 +328,9 @@ La fonction demande quelques arguments :
           // TOUT VA BIEN ON RETOURNE LES DONNES VIA LA FONCTION DE CALLBACK success
           // Tu commences à comprendre à quoi ça sert la fonction de callback ?
           success(data,email);
+
+          // on va chercher les données
+          this.getMemo(email, this.props.onSuccessGetMemo, false, false);
 
           // ON RETOURNE QU'ON EST BIEN CONTENT
           return true;
@@ -397,5 +374,38 @@ La fonction demande quelques arguments :
     // ET ON LANCE LA REQUETE, FACILE QUOI !
     httpRequest.send(data_send);
   };
+  render() {
+    return (
+      <div>
+        <form
+          onSubmit={e => {
+            this.submitSign(e);
+          }}
+        >
+          <label>
+            Email:
+            <input
+              type="email"
+              className="ml-4"
+              id="signemail"
+              value="y.douenel@coopernet.fr"
+              onChange={e => this.changeFormSign(e)}
+            />
+          </label>
+          <label>
+            Mot de passe :
+            <input
+              type="password"
+              className="ml-4"
+              id="signpwd"
+              value="test"
+              onChange={e => this.changeFormSign(e)}
+            />
+          </label>
+          <button type="submit">Se connecter</button>
+        </form>
+      </div>
+    );
+  }
 }
 export default Neore;
