@@ -24,14 +24,6 @@ class Neore extends Component {
       false,
       false
     );
-
-    /*  */
-
-      /* const state = {...this.state};
-      state.isLogged = true;
-      this.setState(state);
-    }*/
-
     return false;
   };
 
@@ -61,9 +53,9 @@ La fonction demande quelques arguments :
     // ON FIXE UN TIMEOUT, HISTOIRE DE...
     httpRequest.timeout = 30000;
 
-    // ON DEFINI UN ECOUTEUR SUR LE CHANGEMENT D'ETAT DE LA CONNEXION
-    httpRequest.onreadystatechange = function() {
-      // ON ECOUTE SI LA CONNEXION EST TERMINE AVEC SUCCESS
+    // ON DEFINIT UN ECOUTEUR SUR LE CHANGEMENT D'ETAT DE LA CONNEXION
+    httpRequest.onreadystatechange = () =>  {
+      // ON ECOUTE SI LA CONNEXION EST TERMINEE AVEC SUCCESS
       if (httpRequest.readyState === XMLHttpRequest.DONE) {
         // SI ON RECUPERE UN CODE 200 (Indiquant que tout s'est bien passé)
         if (httpRequest.status === 200) {
@@ -81,8 +73,8 @@ La fonction demande quelques arguments :
           console.log("EMAIL : ", email);
           success(data, email);
 
-          // on sauvegarde toutes les 10 s
-          /* setInterval(() => {
+          // on sauvegarde toutes les 5s
+         /*  setInterval(() => {
             console.log("Ecriture json sur serveur");
             this.postMemo(email, data, false, false, false);
           }, 5000); */

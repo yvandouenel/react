@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Tableau from "./Tableau";
+import Neore from "./Neore";
 
 //var tableaux = require("../config/tableaux.json");
 
@@ -8,15 +9,19 @@ class Tableaux extends Component {
     super(props);
     this.state = {
       show_answers: false,
-      tableaux: []
+      tableaux: [],
+      isLogged: false,
+      email: "",
+      data: {}
     };
     this.saveData();
   }
   componentWillMount() {
-    this.setState({ show_answers: false, tableaux: this.props.data.tableaux });
+    const state = { ...state };
+
+    //this.setState({ show_answers: false, tableaux: this.props.data.tableaux });
   }
   saveData = () => {
-
     let state = { ...this.state };
     state = this.setCartesToInvisible(state);
 
@@ -47,6 +52,27 @@ class Tableaux extends Component {
       body: JSON.stringify(json)
     });
   }; */
+  isEmpty = obj => {
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) return false;
+    }
+    return true;
+  };
+  successSign = (data, email) => {
+    const state = { ...this.state };
+    state.isLogged = true;
+    state.email = email;
+    this.setState(state);
+  };
+  successGetMemo = (data, email) => {
+    const state = { ...this.state };
+    state.tableaux = data.data.data.tableaux;
+    console.log("////////////////////////");
+    console.log(data.data.data.tableaux);
+    console.log("////////////////////////");
+    this.setState(state);
+    //console.log("successGetMemo : data dans le state :", this.state.tableaux);
+  };
   totalCartes = () => {
     let total = 0;
     this.state.tableaux.forEach(function(tableau) {
@@ -59,7 +85,6 @@ class Tableaux extends Component {
 
     return total;
   };
-
 
   setCartesToInvisible = state => {
     state.tableaux.forEach(tableau => {
@@ -349,28 +374,43 @@ class Tableaux extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-12">
-              {this.state.tableaux
-                .sort(this.compareLabelTableau)
-                .map(tableau => {
-                  return (
+              {this.state.isLogged === false && (
+                <Neore
+                  onSuccessSign={this.successSign}
+                  onSuccessGetMemo={this.successGetMemo}
+                />
+              )}
+              {this.state.isLogged && (
+                <div>
+                  Vous êtes identifié.e.s
+                  {this.state.tableaux
+                    .sort(this.compareLabelTableau)
+                    .map(tableau => {
+                      return (
+                        <button
+                          key={tableau.id}
+                          className={this.manageButtonLabelClass(
+                            tableau.visible
+                          )}
+                          style={{ marginRight: "20px", marginBottom: "0" }}
+                          onClick={e => this.toggleTableau(e, tableau)}
+                        >
+                          {tableau.sujet}
+                        </button>
+                      );
+                    })}
+                  <div>
                     <button
-                      key={tableau.id}
-                      className={this.manageButtonLabelClass(tableau.visible)}
-                      style={{ marginRight: "20px", marginBottom: "0" }}
-                      onClick={e => this.toggleTableau(e, tableau)}
+                      className="btn text-white"
+                      onClick={e => {
+                        this.addTableau(e);
+                      }}
                     >
-                      {tableau.sujet}
+                      Ajouter un tableau
                     </button>
-                  );
-                })}
-              <button
-                className="btn text-white"
-                onClick={e => {
-                  this.addTableau(e);
-                }}
-              >
-                Ajouter un tableau
-              </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
