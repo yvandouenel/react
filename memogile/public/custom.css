@@ -1,16 +1,26 @@
 .cursor-pointer:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .hover-red:hover {
-    background-color: black;
-    color: white;
-    border-radius: 8px;
+  background-color: black;
+  color: white;
+  border-radius: 8px;
 }
 
 .input-label-tableau {
-    border: 0;
-    color: white;
-    background-color: #6B737D;
-    font-size: 3em;
+  border: 0;
+  color: white;
+  background-color: #6B737D;
+  font-size: 3em;
+}
+@media screen and (min-width: 900px) {
+  .input-large, .textarea-large {
+    width: 700px;
+  }
+}
+@media screen and (max-width: 900px) {
+  .label-large {
+    display: block;
+  }
 }

@@ -15,6 +15,9 @@ class Carte extends Component {
     console.log("Dans HandleShow");
     this.setState({ show: true });
   };
+  createMarkup = (text) => {
+    return {__html: text};
+  }
 
   render() {
     return (
@@ -62,7 +65,7 @@ class Carte extends Component {
             {this.props.show_reponse && (
               <div>
                 <div className="panel-footer reponse border border-success m-2 p-2">
-                  {this.props.reponse}
+                  <div dangerouslySetInnerHTML={this.createMarkup(this.props.reponse)} />
                 </div>
                 <div className="pl-4">
                   <Button variant="primary" onClick={this.handleShow}>
@@ -88,7 +91,7 @@ class Carte extends Component {
 
           {/* modal */}
 
-          <Modal show={this.state.show} onHide={this.handleClose}>
+          <Modal show={this.state.show} onHide={this.handleClose} size="lg" className="modal-large">
             <Modal.Header closeButton>
               <Modal.Title>Modifier une question ou une réponse</Modal.Title>
             </Modal.Header>
@@ -96,11 +99,11 @@ class Carte extends Component {
               {
                 /* formulaire ici */
                 <form onSubmit={this.props.onSubmitQR}>
-                  <label>
+                  <label className="label-large">
                     question:
                     <input
                       type="text"
-                      className="ml-4"
+                      className="ml-4 input-large"
                       value={this.props.question}
                       onChange={e =>
                         this.props.onChangeQuestion(
@@ -112,11 +115,11 @@ class Carte extends Component {
                       }
                     />
                   </label>
-                  <label>
+                  <label className="label-large">
                     Réponse:
-                    <input
+                    <textarea
                       type="text"
-                      className="ml-4"
+                      className="ml-4 textarea-large"
                       value={this.props.reponse}
                       onChange={e =>
                         this.props.onChangeReponse(
