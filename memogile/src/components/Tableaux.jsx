@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Tableau from "./Tableau";
 import Neore from "./Neore";
+import { FaRegSave } from "react-icons/fa";
 
 //var tableaux = require("../config/tableaux.json");
 
@@ -12,46 +13,28 @@ class Tableaux extends Component {
       tableaux: [],
       isLogged: false,
       email: "",
-      data: {}
+      neore: new Neore(),
+      justRecorded: false
     };
-    this.saveData();
   }
-  componentWillMount() {
-    const state = { ...state };
 
-    //this.setState({ show_answers: false, tableaux: this.props.data.tableaux });
-  }
   saveData = () => {
     let state = { ...this.state };
     state = this.setCartesToInvisible(state);
 
-    //this.props.neore.postMemo(this.props.email, data, false, false, false);
-    /* setInterval(() => {
+    // on sauvegarde toutes les 5s console.log("Données sauvegardées : ",{tableaux:state.tableaux});
+    setInterval(() => {
       console.log("Ecriture json sur serveur");
-      this.props.neore.postMemo(this.props.email, data, false, false, false);
-    }, 5000); */
-    //postMemo = (email, data, success, before, progress)
-    /* setInterval(() => {
-      this.writeJson();
-      //console.log(this);
-    }, 50000); */
+      this.state.neore.postMemo(
+        this.state.email,
+        { tableaux: state.tableaux },
+        this.successPostMemo,
+        false,
+        false
+      );
+    }, 5000);
   };
-  /* writeJson = () => {
-    console.log("Ecriture json");
-    let state = { ...this.state };
-    state = this.setCartesToInvisible(state);
-    let json = {
-      tableaux: state.tableaux
-    };
-    fetch("http://localhost:3003/api/writetableaux", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(json)
-    });
-  }; */
+
   isEmpty = obj => {
     for (var key in obj) {
       if (obj.hasOwnProperty(key)) return false;
@@ -63,15 +46,27 @@ class Tableaux extends Component {
     state.isLogged = true;
     state.email = email;
     this.setState(state);
+    // on va chercher les données
+    this.state.neore.getMemo(email, this.successGetMemo, false, false);
   };
   successGetMemo = (data, email) => {
     const state = { ...this.state };
-    state.tableaux = data.data.data.tableaux;
-    console.log("////////////////////////");
-    console.log(data.data.data.tableaux);
-    console.log("////////////////////////");
+    state.tableaux = data.data.tableaux;
+    console.log("Data récupérées : ", data);
     this.setState(state);
-    //console.log("successGetMemo : data dans le state :", this.state.tableaux);
+    // on enregistre les données
+    this.saveData();
+  };
+  successPostMemo = data => {
+    const state = { ...this.state };
+    state.justRecorded = true;
+    const mythis = this;
+    setTimeout(() => {
+      const state = { ...mythis.state };
+      state.justRecorded = false;
+      mythis.setState(state);
+    }, 500);
+    this.setState(state);
   };
   totalCartes = () => {
     let total = 0;
@@ -368,6 +363,23 @@ class Tableaux extends Component {
     }
     return comparison;
   };
+  changeFormSign = event => {
+    event.preventDefault();
+  };
+  submitSign = event => {
+    event.preventDefault();
+    const email = document.getElementById("signemail");
+    const pwd = document.getElementById("signpwd");
+
+    this.state.neore.memoSign(
+      email.value,
+      pwd.value,
+      this.successSign,
+      false,
+      false
+    );
+    return false;
+  };
   render() {
     return (
       <div>
@@ -375,14 +387,38 @@ class Tableaux extends Component {
           <div className="row">
             <div className="col-md-12">
               {this.state.isLogged === false && (
-                <Neore
-                  onSuccessSign={this.successSign}
-                  onSuccessGetMemo={this.successGetMemo}
-                />
+                <div>
+                  <form
+                    onSubmit={e => {
+                      this.submitSign(e);
+                    }}
+                  >
+                    <label>
+                      Email:
+                      <input
+                        type="email"
+                        className="ml-4"
+                        id="signemail"
+                        value="y.douenel@coopernet.fr"
+                        onChange={e => this.changeFormSign(e)}
+                      />
+                    </label>
+                    <label>
+                      Mot de passe :
+                      <input
+                        type="password"
+                        className="ml-4"
+                        id="signpwd"
+                        value="test"
+                        onChange={e => this.changeFormSign(e)}
+                      />
+                    </label>
+                    <button type="submit">Se connecter</button>
+                  </form>
+                </div>
               )}
               {this.state.isLogged && (
                 <div>
-                  Vous êtes identifié.e.s
                   {this.state.tableaux
                     .sort(this.compareLabelTableau)
                     .map(tableau => {
@@ -408,6 +444,7 @@ class Tableaux extends Component {
                     >
                       Ajouter un tableau
                     </button>
+                    {this.state.justRecorded && (<span style={{color: 'white'}}><FaRegSave  /></span>)}
                   </div>
                 </div>
               )}
