@@ -12,12 +12,21 @@ class Carte extends Component {
   };
 
   handleShow = event => {
-    console.log("Dans HandleShow");
     this.setState({ show: true });
   };
-  createMarkup = (text) => {
-    return {__html: text};
-  }
+  createMarkup = text => {
+    return { __html: text };
+  };
+  reponseHtml = () => {
+    return this.props.reponse_html ? "1" : "0";
+  };
+  /* returnHml = () => {
+    if (this.props.reponse_html) {
+      return <UserGreeting />;
+    }
+    return <GuestGreeting />;
+  } */
+
 
   render() {
     return (
@@ -60,12 +69,20 @@ class Carte extends Component {
               }}
             >
               {this.props.question}
+
             </div>
 
             {this.props.show_reponse && (
               <div>
-                <div className="panel-footer reponse border border-success m-2 p-2">
-                  <div dangerouslySetInnerHTML={this.createMarkup(this.props.reponse)} />
+                <div className="panel-footer reponse border-left border-success m-2 p-2">
+
+                  {this.props.reponse_html && <div
+                    dangerouslySetInnerHTML={this.createMarkup(
+                      this.props.reponse
+                    )}
+                  />}
+                  {!this.props.reponse_html && this.props.reponse}
+
                 </div>
                 <div className="pl-4">
                   <Button variant="primary" onClick={this.handleShow}>
@@ -91,7 +108,12 @@ class Carte extends Component {
 
           {/* modal */}
 
-          <Modal show={this.state.show} onHide={this.handleClose} size="lg" className="modal-large">
+          <Modal
+            show={this.state.show}
+            onHide={this.handleClose}
+            size="lg"
+            className="modal-large"
+          >
             <Modal.Header closeButton>
               <Modal.Title>Modifier une question ou une réponse</Modal.Title>
             </Modal.Header>
@@ -123,6 +145,23 @@ class Carte extends Component {
                       value={this.props.reponse}
                       onChange={e =>
                         this.props.onChangeReponse(
+                          e,
+                          this.props.carte,
+                          this.props.colonne,
+                          this.props.tableau
+                        )
+                      }
+                    />
+                  </label>
+                  <label className="label-large">
+                    HTML interprété ?
+                    <input
+                      className="ml-2"
+                      name="html"
+                      type="checkbox"
+                      checked={this.reponseHtml() === "1"}
+                      onChange={e =>
+                        this.props.onChangeHtml(
                           e,
                           this.props.carte,
                           this.props.colonne,

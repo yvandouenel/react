@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import Carte from "./Carte";
 class Colonne extends Component {
   state = {};
-
+  reponseHtml = (carte)=>{
+    return (carte.reponse_html) ? true : false;
+  }
   render() {
     return (
       <div className="col-md-4 col-lg-3">
@@ -26,11 +28,13 @@ class Colonne extends Component {
                 carte={carte}
                 question={carte.question}
                 reponse={carte.reponse}
+                reponse_html={this.reponseHtml(carte)}
                 show_reponse={carte.show_reponse}
                 onRemove={this.props.onRemoveCarte}
                 onMoveCarte={this.props.onMoveCarte}
                 onChangeQuestion={this.props.onChangeQuestion}
                 onChangeReponse={this.props.onChangeReponse}
+                onChangeHtml={this.props.onChangeHtml}
                 onSubmitQR={this.props.onSubmitQR}
                 onShowReponse={this.props.onShowReponse}
               />

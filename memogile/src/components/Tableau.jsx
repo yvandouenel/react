@@ -52,6 +52,7 @@ class Tableau extends Component {
                   onAddCarte={this.props.onAddCarte}
                   onChangeQuestion={this.props.onChangeQuestion}
                   onChangeReponse={this.props.onChangeReponse}
+                  onChangeHtml={this.props.onChangeHtml}
                   onSubmitQR={this.props.onSubmitQR}
                   onShowReponse={this.props.onShowReponse}
                 />

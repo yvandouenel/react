@@ -14,16 +14,40 @@ class Tableaux extends Component {
       isLogged: false,
       email: "",
       neore: new Neore(),
-      justRecorded: false
+      justRecorded: false,
+      token: false
     };
+    this.timeout = false;
+    this.isLogged();
   }
-
+  isLogged = () => {
+    const state = { ...this.state };
+    // récupère le token
+    const token = this.state.neore.getToken();
+    // si le token est ok, on peut récupérer les données
+    if (token) {
+      // récupération des données
+      this.state.neore.apiGetData(token, this.successApiGetData, false, false);
+      state.token = token;
+      this.setState(state);
+    } else {
+      this.setState(state);
+    }
+  };
   saveData = () => {
     let state = { ...this.state };
     state = this.setCartesToInvisible(state);
 
+    this.state.neore.postMemo(
+      this.state.email,
+      { tableaux: state.tableaux },
+      this.successPostMemo,
+      false,
+      false
+    );
+
     // on sauvegarde toutes les 5s console.log("Données sauvegardées : ",{tableaux:state.tableaux});
-    setInterval(() => {
+    /* setInterval(() => {
       console.log("Ecriture json sur serveur");
       this.state.neore.postMemo(
         this.state.email,
@@ -32,22 +56,28 @@ class Tableaux extends Component {
         false,
         false
       );
-    }, 5000);
+    }, 5000); */
   };
 
   isEmpty = obj => {
-    for (var key in obj) {
+    for (let key in obj) {
       if (obj.hasOwnProperty(key)) return false;
     }
     return true;
   };
-  successSign = (data, email) => {
+  successSignIn = data => {
+    console.log("data: ", data);
     const state = { ...this.state };
     state.isLogged = true;
-    state.email = email;
+    state.token = data.data;
     this.setState(state);
     // on va chercher les données
-    this.state.neore.getMemo(email, this.successGetMemo, false, false);
+    this.state.neore.apiGetData(
+      data.data,
+      this.successApiGetData,
+      false,
+      false
+    );
   };
   successGetMemo = (data, email) => {
     const state = { ...this.state };
@@ -55,17 +85,25 @@ class Tableaux extends Component {
     console.log("Data récupérées : ", data);
     this.setState(state);
     // on enregistre les données
-    this.saveData();
+    //this.saveData();
+  };
+  successApiGetData = data => {
+    console.log("Dans successApiGetData", data);
+    const state = { ...this.state };
+    state.tableaux = data.data.tableaux;
+    console.log("Data récupérées : ", data);
+    this.setState(state);
   };
   successPostMemo = data => {
     const state = { ...this.state };
     state.justRecorded = true;
     const mythis = this;
+    // on affiche l'icône qui montre que l'on a enregistré
     setTimeout(() => {
       const state = { ...mythis.state };
       state.justRecorded = false;
       mythis.setState(state);
-    }, 500);
+    }, 1000);
     this.setState(state);
   };
   totalCartes = () => {
@@ -93,7 +131,6 @@ class Tableaux extends Component {
     });
     return state;
   };
-  componentDidUpdate(prevProps, prevState) {}
 
   /**
    * La première chose est de faire le rapprochement entre la colonne du state et la colonne en tant qu'élément de React
@@ -112,6 +149,8 @@ class Tableaux extends Component {
       show_reponse: false
     });
     this.setState(state);
+    //on enregistre les données
+    this.saveData();
   };
 
   addTableau = event => {
@@ -149,6 +188,8 @@ class Tableaux extends Component {
       ]
     });
     this.setState(state);
+    //on enregistre les données
+    this.saveData();
   };
 
   removeCarte = (carte_event, colonne_event, tableau_event) => {
@@ -168,6 +209,8 @@ class Tableaux extends Component {
 
       this.setState(state);
     }
+    //on enregistre les données
+    this.saveData();
   };
   removeTableau = (e, tableau_event) => {
     console.log("dans remove tableau", tableau_event);
@@ -180,6 +223,8 @@ class Tableaux extends Component {
       );
 
       this.setState(state);
+      //on enregistre les données
+      this.saveData();
     }
   };
   /**
@@ -241,6 +286,8 @@ class Tableaux extends Component {
     }
 
     this.setState(state);
+    //on enregistre les données
+    this.saveData();
   };
   /**
    * Récupération de l'émetteur de l'événement + de la carte + de la colonne
@@ -260,6 +307,15 @@ class Tableaux extends Component {
     ].question = event.target.value;
     this.setState(state);
     event.preventDefault();
+    //on enregistre les données après 5 secondes
+    const this_timeout = this;
+    if (this.timeout) clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      console.log(
+        "handleChangeQuestion : enregistrement après changement de question"
+      );
+      this_timeout.saveData();
+    }, 5000);
   };
   /**
    * Récupération de l'émetteur de l'événement + de la carte + de la colonne
@@ -279,6 +335,15 @@ class Tableaux extends Component {
     ].reponse = event.target.value;
     this.setState(state);
     event.preventDefault();
+    //on enregistre les données après 5 secondes
+    const this_timeout = this;
+    clearTimeout(timeoutId);
+    let timeoutId = setTimeout(() => {
+      console.log(
+        "handleChangeQuestion : enregistrement après changement de réponse"
+      );
+      this_timeout.saveData();
+    }, 5000);
   };
   handleChangeLabelTableau = (event, tableau_event) => {
     let state = { ...this.state };
@@ -296,6 +361,26 @@ class Tableaux extends Component {
   handleSubmitLabelTableau = event => {
     event.preventDefault();
     return false;
+  };
+  handleChangeHtml = (event, carte_event, colonne_event, tableau_event) => {
+    const target = event.target;
+    const value = target.type === "checkbox" ? target.checked : target.value;
+    //this.setState({selected: !this.state.selected});
+    /* const name = target.name; */
+    let state = { ...this.state };
+    let tableau_index = state.tableaux.indexOf(tableau_event);
+    let colonne_index = state.tableaux[tableau_index].colonnes.indexOf(
+      colonne_event
+    );
+    let carte_index = state.tableaux[tableau_index].colonnes[
+      colonne_index
+    ].cartes.indexOf(carte_event);
+    state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+      carte_index
+    ].reponse_html = value;
+    this.setState(state);
+    //on enregistre les données
+    this.saveData();
   };
 
   toggleTableau = (event, tableau_event) => {
@@ -366,19 +451,29 @@ class Tableaux extends Component {
   changeFormSign = event => {
     event.preventDefault();
   };
+
   submitSign = event => {
     event.preventDefault();
     const email = document.getElementById("signemail");
     const pwd = document.getElementById("signpwd");
 
-    this.state.neore.memoSign(
+    this.state.neore.apiSignIn(
       email.value,
       pwd.value,
-      this.successSign,
+      this.successSignIn,
       false,
       false
     );
     return false;
+  };
+  logOut = () => {
+    const state = {...this.state};
+    state.isLogged = false;
+    state.token = false;
+    state.tableaux = [];
+    console.log("logOut");
+    localStorage.removeItem("token");
+    this.setState(state);
   };
   render() {
     return (
@@ -435,6 +530,14 @@ class Tableaux extends Component {
                         </button>
                       );
                     })}
+                  <button
+                    className="btn text-white"
+                    onClick={e => {
+                      this.logOut();
+                    }}
+                  >
+                    Déconnexion
+                  </button>
                   <div>
                     <button
                       className="btn text-white"
@@ -444,7 +547,11 @@ class Tableaux extends Component {
                     >
                       Ajouter un tableau
                     </button>
-                    {this.state.justRecorded && (<span style={{color: 'white'}}><FaRegSave  /></span>)}
+                    {this.state.justRecorded && (
+                      <span style={{ color: "white" }}>
+                        <FaRegSave />
+                      </span>
+                    )}
                   </div>
                 </div>
               )}
@@ -466,6 +573,7 @@ class Tableaux extends Component {
                 onChangeQuestion={this.handleChangeQuestion}
                 onChangeReponse={this.handleChangeReponse}
                 onChangeLabelTableau={this.handleChangeLabelTableau}
+                onChangeHtml={this.handleChangeHtml}
                 onRemoveTableau={this.removeTableau}
                 onSubmitQR={this.handleSubmit}
                 onSubmitLabelTableau={this.handleSubmitLabelTableau}
