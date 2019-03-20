@@ -5,11 +5,7 @@ import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 
 class Carte extends Component {
   state = {};
-  handleClose = () => {
-    console.log("Dans HandleClose");
 
-    this.setState({ show: false });
-  };
 
   createMarkup = text => {
     return { __html: text };
@@ -115,12 +111,12 @@ class Carte extends Component {
 
           <Modal
             show={this.props.show_form}
-            onHide={this.handleClose}
+            onHide={this.props.onHandleClose}
             size="lg"
             className="modal-large"
           >
-            <Modal.Header closeButton>
-              <Modal.Title>Modifier une question ou une réponse</Modal.Title>
+            <Modal.Header >
+              <Modal.Title>Modifier une question et/ou une réponse</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {
@@ -179,8 +175,15 @@ class Carte extends Component {
               }
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="primary" onClick={this.handleClose}>
-                Enregistrer
+              <Button variant="primary" onClick={e =>
+                        this.props.onHandleCloseForm(
+                          e,
+                          this.props.carte,
+                          this.props.colonne,
+                          this.props.tableau
+                        )
+                      }>
+                Fermer
               </Button>
             </Modal.Footer>
           </Modal>

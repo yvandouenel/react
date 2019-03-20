@@ -37,6 +37,7 @@ class Colonne extends Component {
                 onChangeReponse={this.props.onChangeReponse}
                 onChangeHtml={this.props.onChangeHtml}
                 onHandleShowForm={this.props.onHandleShowForm}
+                onHandleCloseForm={this.props.onHandleCloseForm}
                 onSubmitQR={this.props.onSubmitQR}
                 onShowReponse={this.props.onShowReponse}
               />

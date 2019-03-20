@@ -18,6 +18,7 @@ class Tableaux extends Component {
       token: false
     };
     this.timeout = false;
+    this.modifyingQR = false;
     this.isLogged();
   }
   isLogged = () => {
@@ -369,6 +370,21 @@ class Tableaux extends Component {
     this.setState(state);
     //this.setState({ show: true });
   };
+  handleCloseForm = (event, carte_event, colonne_event, tableau_event) => {
+    console.log("Dans handleCloseForm");
+    let state = { ...this.state };
+    let tableau_index = state.tableaux.indexOf(tableau_event);
+    let colonne_index = state.tableaux[tableau_index].colonnes.indexOf(
+      colonne_event
+    );
+    let carte_index = state.tableaux[tableau_index].colonnes[
+      colonne_index
+    ].cartes.indexOf(carte_event);
+    state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+      carte_index
+    ].show_form = false;
+    this.setState(state);
+  };
 
   handleSubmit = event => {
     event.preventDefault();
@@ -412,28 +428,38 @@ class Tableaux extends Component {
   };
 
   showReponse = (event, carte_event, colonne_event, tableau_event) => {
-    let state = { ...this.state };
-    let tableau_index = state.tableaux.indexOf(tableau_event);
-    let colonne_index = state.tableaux[tableau_index].colonnes.indexOf(
-      colonne_event
-    );
-    let carte_index = state.tableaux[tableau_index].colonnes[
-      colonne_index
-    ].cartes.indexOf(carte_event);
+    if(this.modifyingQR) {
+      this.handleShowForm(event, carte_event, colonne_event, tableau_event);
+    } else {
+      this.modifyingQR = true;
+      setTimeout(() => {
+        this.modifyingQR = false;
+      }, 300);
 
-    if (
-      state.tableaux[tableau_index].colonnes[colonne_index].cartes[carte_index]
-        .show_reponse
-    )
-      state.tableaux[tableau_index].colonnes[colonne_index].cartes[
-        carte_index
-      ].show_reponse = false;
-    else
-      state.tableaux[tableau_index].colonnes[colonne_index].cartes[
-        carte_index
-      ].show_reponse = true;
+      let state = { ...this.state };
+      let tableau_index = state.tableaux.indexOf(tableau_event);
+      let colonne_index = state.tableaux[tableau_index].colonnes.indexOf(
+        colonne_event
+      );
+      let carte_index = state.tableaux[tableau_index].colonnes[
+        colonne_index
+      ].cartes.indexOf(carte_event);
 
-    this.setState(state);
+      if (
+        state.tableaux[tableau_index].colonnes[colonne_index].cartes[carte_index]
+          .show_reponse
+      )
+        state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+          carte_index
+        ].show_reponse = false;
+      else
+        state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+          carte_index
+        ].show_reponse = true;
+
+      this.setState(state);
+    }
+
   };
   showAllReponse = (event, tableau_event, hide) => {
     let state = { ...this.state };
@@ -483,7 +509,7 @@ class Tableaux extends Component {
     return false;
   };
   logOut = () => {
-    const state = {...this.state};
+    const state = { ...this.state };
     state.isLogged = false;
     state.token = false;
     state.tableaux = [];
@@ -591,6 +617,7 @@ class Tableaux extends Component {
                 onChangeLabelTableau={this.handleChangeLabelTableau}
                 onChangeHtml={this.handleChangeHtml}
                 onHandleShowForm={this.handleShowForm}
+                onHandleCloseForm={this.handleCloseForm}
                 onRemoveTableau={this.removeTableau}
                 onSubmitQR={this.handleSubmit}
                 onSubmitLabelTableau={this.handleSubmitLabelTableau}
