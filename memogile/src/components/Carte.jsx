@@ -121,11 +121,12 @@ class Carte extends Component {
             <Modal.Body>
               {
                 /* formulaire ici */
-                <form onSubmit={this.props.onSubmitQR}>
+                <form onSubmit={(e) => {this.props.onSubmitQR(e)}}>
                   <label className="label-large">
                     question:
                     <input
                       type="text"
+                      autoFocus
                       className="ml-4 input-large"
                       value={this.props.question}
                       onChange={e =>
@@ -142,6 +143,7 @@ class Carte extends Component {
                     Réponse:
                     <textarea
                       type="text"
+                      autoFocus
                       className="ml-4 textarea-large"
                       value={this.props.reponse}
                       onChange={e =>

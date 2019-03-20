@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Tableau from "./Tableau";
+import Button from "react-bootstrap/Button";
 import Neore from "./Neore";
 import { FaRegSave } from "react-icons/fa";
 
@@ -22,6 +23,7 @@ class Tableaux extends Component {
     this.isLogged();
   }
   isLogged = () => {
+    console.log("method isLogged");
     const state = { ...this.state };
     // récupère le token
     const token = this.state.neore.getToken();
@@ -30,6 +32,7 @@ class Tableaux extends Component {
       // récupération des données
       this.state.neore.apiGetData(token, this.successApiGetData, false, false);
       state.token = token;
+      state.isLogged = true;
       this.setState(state);
     } else {
       this.setState(state);
@@ -71,6 +74,8 @@ class Tableaux extends Component {
     const state = { ...this.state };
     state.isLogged = true;
     state.token = data.data;
+    // on enregistre le token
+    this.state.neore.setToken(state.token);
     this.setState(state);
     // on va chercher les données
     this.state.neore.apiGetData(
@@ -91,6 +96,7 @@ class Tableaux extends Component {
   successApiGetData = data => {
     console.log("Dans successApiGetData", data);
     const state = { ...this.state };
+    state.isLogged = true; // pas compris pourquoi il faut à nouveau affecter true à state.isLogged alors que c'est déjà fait dans la méthode isLogged
     state.tableaux = data.data.tableaux;
     console.log("Data récupérées : ", data);
     this.setState(state);
@@ -139,19 +145,28 @@ class Tableaux extends Component {
    * Une fois que l'on a trouvé la colonne, on y ajoute une carte
    */
   addCarte = (col_event, tableau_event) => {
+    console.log("addCarte");
     const state = { ...this.state };
     const tab_index = state.tableaux.indexOf(tableau_event);
     const col_index = state.tableaux[tab_index].colonnes.indexOf(col_event);
+    const nb_carte = this.totalCartes() + 1;
 
     state.tableaux[tab_index].colonnes[col_index].cartes.push({
-      id: this.totalCartes() + 1,
-      question: "Une question",
-      reponse: "Sa réponse",
+      id: nb_carte,
+      question: "",
+      reponse: "",
       show_reponse: false
     });
     this.setState(state);
     //on enregistre les données
     this.saveData();
+
+    // on affiche le formulaire de modification de la carte en question
+    const carteAdded = state.tableaux[tab_index].colonnes[
+      col_index
+    ].cartes.filter(c => c.id === nb_carte)[0];
+    console.log("Carte ajoutée : ", carteAdded);
+    this.handleShowForm(false, carteAdded, col_event, tableau_event);
   };
 
   addTableau = event => {
@@ -428,7 +443,7 @@ class Tableaux extends Component {
   };
 
   showReponse = (event, carte_event, colonne_event, tableau_event) => {
-    if(this.modifyingQR) {
+    if (this.modifyingQR) {
       this.handleShowForm(event, carte_event, colonne_event, tableau_event);
     } else {
       this.modifyingQR = true;
@@ -446,8 +461,9 @@ class Tableaux extends Component {
       ].cartes.indexOf(carte_event);
 
       if (
-        state.tableaux[tableau_index].colonnes[colonne_index].cartes[carte_index]
-          .show_reponse
+        state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+          carte_index
+        ].show_reponse
       )
         state.tableaux[tableau_index].colonnes[colonne_index].cartes[
           carte_index
@@ -459,7 +475,6 @@ class Tableaux extends Component {
 
       this.setState(state);
     }
-
   };
   showAllReponse = (event, tableau_event, hide) => {
     let state = { ...this.state };
@@ -526,31 +541,32 @@ class Tableaux extends Component {
               {this.state.isLogged === false && (
                 <div>
                   <form
+                    className="mt-4"
                     onSubmit={e => {
                       this.submitSign(e);
                     }}
                   >
-                    <label>
-                      Email:
+                    <label className="label label-default text-white">
+                      Email :
                       <input
                         type="email"
                         className="ml-4"
                         id="signemail"
-                        value="y.douenel@coopernet.fr"
                         onChange={e => this.changeFormSign(e)}
                       />
                     </label>
-                    <label>
+                    <label className="label label-default text-white ml-4">
                       Mot de passe :
                       <input
                         type="password"
                         className="ml-4"
                         id="signpwd"
-                        value="test"
                         onChange={e => this.changeFormSign(e)}
                       />
                     </label>
-                    <button type="submit">Se connecter</button>
+                    <button type="submit" className="btn btn-warning ml-4">
+                      Se connecter
+                    </button>
                   </form>
                 </div>
               )}

@@ -13,12 +13,17 @@ class Neore extends Component {
   getToken = () => {
     console.log("getToken");
     const token = localStorage.getItem("token");
-    if (!token || token.length === 0) return false;
-    else {
+    if (!token || token.length === 0) {
+      console.log("pas de tocken : ", token);
+      return false;
+    } else {
       console.log("token : ", token);
       return token;
     }
   };
+  setToken = (token) => {
+    localStorage.setItem('token', token);
+  }
 
   /* apiGetData
 La fonction pour récupérer les données sur le serveur.
