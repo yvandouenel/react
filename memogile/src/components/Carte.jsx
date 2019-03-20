@@ -11,9 +11,6 @@ class Carte extends Component {
     this.setState({ show: false });
   };
 
-  handleShow = event => {
-    this.setState({ show: true });
-  };
   createMarkup = text => {
     return { __html: text };
   };
@@ -26,7 +23,6 @@ class Carte extends Component {
     }
     return <GuestGreeting />;
   } */
-
 
   render() {
     return (
@@ -69,23 +65,32 @@ class Carte extends Component {
               }}
             >
               {this.props.question}
-
             </div>
 
             {this.props.show_reponse && (
               <div>
                 <div className="panel-footer reponse border-left border-success m-2 p-2">
-
-                  {this.props.reponse_html && <div
-                    dangerouslySetInnerHTML={this.createMarkup(
-                      this.props.reponse
-                    )}
-                  />}
+                  {this.props.reponse_html && (
+                    <div
+                      dangerouslySetInnerHTML={this.createMarkup(
+                        this.props.reponse
+                      )}
+                    />
+                  )}
                   {!this.props.reponse_html && this.props.reponse}
-
                 </div>
                 <div className="pl-4">
-                  <Button variant="primary" onClick={this.handleShow}>
+                  <Button
+                    variant="primary"
+                    onClick={e => {
+                      this.props.onHandleShowForm(
+                        e,
+                        this.props.carte,
+                        this.props.colonne,
+                        this.props.tableau
+                      );
+                    }}
+                  >
                     Modifier
                   </Button>
                   <Button
@@ -109,7 +114,7 @@ class Carte extends Component {
           {/* modal */}
 
           <Modal
-            show={this.state.show}
+            show={this.props.show_form}
             onHide={this.handleClose}
             size="lg"
             className="modal-large"

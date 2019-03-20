@@ -29,12 +29,14 @@ class Colonne extends Component {
                 question={carte.question}
                 reponse={carte.reponse}
                 reponse_html={this.reponseHtml(carte)}
+                show_form={carte.show_form}
                 show_reponse={carte.show_reponse}
                 onRemove={this.props.onRemoveCarte}
                 onMoveCarte={this.props.onMoveCarte}
                 onChangeQuestion={this.props.onChangeQuestion}
                 onChangeReponse={this.props.onChangeReponse}
                 onChangeHtml={this.props.onChangeHtml}
+                onHandleShowForm={this.props.onHandleShowForm}
                 onSubmitQR={this.props.onSubmitQR}
                 onShowReponse={this.props.onShowReponse}
               />

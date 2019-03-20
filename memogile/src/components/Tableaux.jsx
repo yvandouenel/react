@@ -353,6 +353,22 @@ class Tableaux extends Component {
     this.setState(state);
     event.preventDefault();
   };
+  handleShowForm = (event, carte_event, colonne_event, tableau_event) => {
+    console.log("handleShowForm");
+    let state = { ...this.state };
+    let tableau_index = state.tableaux.indexOf(tableau_event);
+    let colonne_index = state.tableaux[tableau_index].colonnes.indexOf(
+      colonne_event
+    );
+    let carte_index = state.tableaux[tableau_index].colonnes[
+      colonne_index
+    ].cartes.indexOf(carte_event);
+    state.tableaux[tableau_index].colonnes[colonne_index].cartes[
+      carte_index
+    ].show_form = true;
+    this.setState(state);
+    //this.setState({ show: true });
+  };
 
   handleSubmit = event => {
     event.preventDefault();
@@ -574,6 +590,7 @@ class Tableaux extends Component {
                 onChangeReponse={this.handleChangeReponse}
                 onChangeLabelTableau={this.handleChangeLabelTableau}
                 onChangeHtml={this.handleChangeHtml}
+                onHandleShowForm={this.handleShowForm}
                 onRemoveTableau={this.removeTableau}
                 onSubmitQR={this.handleSubmit}
                 onSubmitLabelTableau={this.handleSubmitLabelTableau}
