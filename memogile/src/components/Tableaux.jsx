@@ -39,7 +39,7 @@ class Tableaux extends Component {
     state = this.setCartesToInvisible(state);
 
     this.state.neore.postMemo(
-      this.state.email,
+      this.state.token,
       { tableaux: state.tableaux },
       this.successPostMemo,
       false,

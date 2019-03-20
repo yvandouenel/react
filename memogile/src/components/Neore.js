@@ -185,15 +185,15 @@ La fonction demande quelques arguments :
     // C'était pas bien sorcier...
   };
 
-  postMemo = (email, data, success, before, progress) => {
+  postMemo = (token, data, success, before, progress) => {
     // INIT
     var url = this.params.url_serveur + this.params.url_post;
 
     // ON CONVERTIT LES DONNEES EN STRING
     var data_json = "data=" + JSON.stringify(data);
 
-    // ON AJOUTE L'EMAIL AUX DATA
-    var data_send = "email=" + email + "&" + data_json;
+    // ON AJOUTE L'token AUX DATA
+    var data_send = "token=" + token + "&" + data_json;
 
     console.log("[MEMO]", "POST DATA", data_send);
 
