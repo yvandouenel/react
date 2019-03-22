@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import Tableau from "./Tableau";
 import Button from "react-bootstrap/Button";
 import Neore from "./Neore";
+// icons : cf memogile/node_modules/react-icons/fa/index.d.ts
 import { FaRegSave } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
+import { FaPlusCircle } from "react-icons/fa";
 
 //var tableaux = require("../config/tableaux.json");
 
@@ -16,7 +19,8 @@ class Tableaux extends Component {
       email: "",
       neore: new Neore(),
       justRecorded: false,
-      token: false
+      token: false,
+      loginError: false
     };
     this.timeout = false;
     this.modifyingQR = false;
@@ -30,11 +34,20 @@ class Tableaux extends Component {
     // si le token est ok, on peut récupérer les données
     if (token) {
       // récupération des données
-      this.state.neore.apiGetData(token, this.successApiGetData, false, false);
+      this.state.neore.apiGetData(
+        token,
+        this.successApiGetData,
+        false,
+        false,
+        this.failureApiGetData
+      );
       state.token = token;
       state.isLogged = true;
       this.setState(state);
     } else {
+      console.log("Pas de token");
+      state.isLogged = false;
+      this.state.neore.resetToken();
       this.setState(state);
     }
   };
@@ -82,12 +95,14 @@ class Tableaux extends Component {
       data.data,
       this.successApiGetData,
       false,
-      false
+      false,
+      this.failureApiGetData
     );
   };
   successGetMemo = (data, email) => {
     const state = { ...this.state };
     state.tableaux = data.data.tableaux;
+    state.loginError = false;
     console.log("Data récupérées : ", data);
     this.setState(state);
     // on enregistre les données
@@ -508,6 +523,13 @@ class Tableaux extends Component {
   changeFormSign = event => {
     event.preventDefault();
   };
+  failureApiGetData = () => {
+    console.log("failureApiGetData");
+    let state = { ...this.state };
+    state.isLogged = false;
+    state.loginError = true;
+    this.setState(state);
+  };
 
   submitSign = event => {
     event.preventDefault();
@@ -567,11 +589,26 @@ class Tableaux extends Component {
                     <button type="submit" className="btn btn-warning ml-4">
                       Se connecter
                     </button>
+                    {this.state.loginError && (
+                      <div id="loginFailure" className="text-white">
+                        Erreur de login ou de mot de passe. Si vous ne les
+                        retrouvez pas, merci de vous adresser à Yvan ou à
+                        Laurent !
+                      </div>
+                    )}
                   </form>
                 </div>
               )}
-              {this.state.isLogged && (
-                <div>
+              {this.state.isLogged && this.state.tableaux && (
+                <div className="buttons-tableaux">
+                  <button
+                    className="btn text-white btn-logout"
+                    onClick={e => {
+                      this.logOut();
+                    }}
+                  >
+                    <FaSignOutAlt className="logout" /> Déconnexion
+                  </button>
                   {this.state.tableaux
                     .sort(this.compareLabelTableau)
                     .map(tableau => {
@@ -581,21 +618,14 @@ class Tableaux extends Component {
                           className={this.manageButtonLabelClass(
                             tableau.visible
                           )}
-                          style={{ marginRight: "20px", marginBottom: "0" }}
+                          style={{ marginRight: "20px"}}
                           onClick={e => this.toggleTableau(e, tableau)}
                         >
                           {tableau.sujet}
                         </button>
                       );
                     })}
-                  <button
-                    className="btn text-white"
-                    onClick={e => {
-                      this.logOut();
-                    }}
-                  >
-                    Déconnexion
-                  </button>
+
                   <div>
                     <button
                       className="btn text-white"
@@ -603,7 +633,7 @@ class Tableaux extends Component {
                         this.addTableau(e);
                       }}
                     >
-                      Ajouter un tableau
+                      <FaPlusCircle className="vert"/> Ajouter un tableau
                     </button>
                     {this.state.justRecorded && (
                       <span style={{ color: "white" }}>
@@ -617,32 +647,33 @@ class Tableaux extends Component {
           </div>
         </div>
 
-        {this.state.tableaux.map(tableau => {
-          return (
-            tableau.visible && (
-              <Tableau
-                key={tableau.id}
-                id={tableau.id}
-                sujet={tableau.sujet}
-                tableau={tableau}
-                onMoveCarte={this.moveCarte}
-                onRemoveCarte={this.removeCarte}
-                onAddCarte={this.addCarte}
-                onChangeQuestion={this.handleChangeQuestion}
-                onChangeReponse={this.handleChangeReponse}
-                onChangeLabelTableau={this.handleChangeLabelTableau}
-                onChangeHtml={this.handleChangeHtml}
-                onHandleShowForm={this.handleShowForm}
-                onHandleCloseForm={this.handleCloseForm}
-                onRemoveTableau={this.removeTableau}
-                onSubmitQR={this.handleSubmit}
-                onSubmitLabelTableau={this.handleSubmitLabelTableau}
-                onShowReponse={this.showReponse}
-                onShowAllReponse={this.showAllReponse}
-              />
-            )
-          );
-        })}
+        {this.state.tableaux &&
+          this.state.tableaux.map(tableau => {
+            return (
+              tableau.visible && (
+                <Tableau
+                  key={tableau.id}
+                  id={tableau.id}
+                  sujet={tableau.sujet}
+                  tableau={tableau}
+                  onMoveCarte={this.moveCarte}
+                  onRemoveCarte={this.removeCarte}
+                  onAddCarte={this.addCarte}
+                  onChangeQuestion={this.handleChangeQuestion}
+                  onChangeReponse={this.handleChangeReponse}
+                  onChangeLabelTableau={this.handleChangeLabelTableau}
+                  onChangeHtml={this.handleChangeHtml}
+                  onHandleShowForm={this.handleShowForm}
+                  onHandleCloseForm={this.handleCloseForm}
+                  onRemoveTableau={this.removeTableau}
+                  onSubmitQR={this.handleSubmit}
+                  onSubmitLabelTableau={this.handleSubmitLabelTableau}
+                  onShowReponse={this.showReponse}
+                  onShowAllReponse={this.showAllReponse}
+                />
+              )
+            );
+          })}
       </div>
     );
   }

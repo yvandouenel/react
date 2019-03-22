@@ -24,6 +24,10 @@ class Neore extends Component {
   setToken = (token) => {
     localStorage.setItem('token', token);
   }
+  resetToken = () => {
+    localStorage.removeItem('token');
+  }
+
 
   /* apiGetData
 La fonction pour récupérer les données sur le serveur.
@@ -34,7 +38,7 @@ La fonction demande quelques arguments :
 - Une fonction (progress), cerise sur le gateau, qui est executée à interval régulier pour indiquer la progression du téléchargement.
 (Les fonctions before et success sont optionelles et peuvent être remplacées par 'false' si elles ne sont pas utilisées.
 */
-  apiGetData = (token, success, before, progress) => {
+  apiGetData = (token, success, before, progress,failure) => {
     // INIT
     // UN PEU DE LOG POUR DIRE CE QU'ON FAIT
     var url = this.params.url_serveur + "get.php?token=" + token;
@@ -61,6 +65,10 @@ La fonction demande quelques arguments :
           } catch (e) {
             // CA CHIE, ON LOG L'ERREUR ET ON SORT
             console.error("[MEMO]", e, httpRequest.responseText);
+            return false;
+          }
+          if(!data.data) {
+            failure();
             return false;
           }
 

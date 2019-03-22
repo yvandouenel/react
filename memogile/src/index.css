@@ -14,3 +14,18 @@ code {
   height: 40px;
   margin-top: 20px;
 }
+.buttons-tableaux button {
+  margin-bottom: 15px;
+  min-width: 15%;
+}
+.btn-logout {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+}
+.rouge {
+  color: #dc3545;
+}
+.vert {
+  color: #28a745;
+}
