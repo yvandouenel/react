@@ -117,6 +117,7 @@ class Tableaux extends Component {
     this.setState(state);
   };
   successPostMemo = data => {
+    console.log("successPostMemo", data);
     const state = { ...this.state };
     state.justRecorded = true;
     const mythis = this;
